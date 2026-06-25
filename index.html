@@ -1,0 +1,1771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Devign Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bk:#0a0a0a;--wh:#f5f5f5;
+  --g1:#e8e8e8;--g2:#d0d0d0;--g3:#b0b0b0;
+  --g4:#888;--g5:#666;--g6:#444;
+  --g7:#2a2a2a;--g8:#1a1a1a;--g9:#111;
+  --px:'Press Start 2P',monospace;
+  --mn:'Share Tech Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bk);color:var(--wh);font-family:var(--mn);cursor:none;overflow-x:hidden;}
+
+/* ── CURSOR ── */
+#cur{position:fixed;width:12px;height:12px;background:var(--wh);pointer-events:none;z-index:99999;transform:translate(-50%,-50%);clip-path:polygon(0 0,100% 0,100% 33%,66% 33%,66% 66%,100% 66%,100% 100%,0 100%,0 66%,33% 66%,33% 33%,0 33%);transition:transform .1s;}
+#cur2{position:fixed;width:5px;height:5px;background:var(--g4);pointer-events:none;z-index:99998;transform:translate(-50%,-50%);}
+@media(hover:none){#cur,#cur2{display:none;}body{cursor:auto;}a,button{cursor:pointer;}}
+
+/* ── SCANLINES ── */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.018) 2px,rgba(0,0,0,.018) 4px);pointer-events:none;z-index:9990;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:9000;background:var(--bk);height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(16px,4vw,40px);border-bottom:3px solid var(--g7);}
+nav::after{content:'';position:absolute;bottom:-7px;left:0;right:0;height:4px;background:repeating-linear-gradient(90deg,var(--wh) 0,var(--wh) 8px,transparent 8px,transparent 16px);}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo img{width:34px;height:34px;object-fit:contain;}
+.nav-logo-txt{font-family:var(--px);font-size:7px;color:var(--wh);letter-spacing:1px;line-height:1.5;}
+.nav-links{display:flex;list-style:none;gap:0;}
+.nav-links li a{display:block;padding:6px 14px;font-family:var(--px);font-size:6px;color:var(--g3);text-decoration:none;text-transform:uppercase;letter-spacing:1px;position:relative;transition:color .1s;}
+.nav-links li a::before{content:'>';position:absolute;left:3px;opacity:0;color:var(--wh);}
+.nav-links li a:hover,.nav-links li a.active{color:var(--wh);}
+.nav-links li a:hover::before,.nav-links li a.active::before{opacity:1;}
+.nav-cta{font-family:var(--px);font-size:6px;padding:8px 16px;background:var(--wh);color:var(--bk);text-decoration:none;border:none;cursor:none;letter-spacing:1px;white-space:nowrap;flex-shrink:0;}
+.nav-cta:hover{background:var(--g1);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:none;padding:4px;background:none;border:none;}
+.hamburger span{width:22px;height:2px;background:var(--wh);display:block;}
+.mob-menu{display:none;position:fixed;top:56px;left:0;right:0;background:var(--bk);z-index:8999;border-bottom:3px solid var(--g7);flex-direction:column;padding:12px 0;}
+.mob-menu.open{display:flex;}
+.mob-menu a{font-family:var(--px);font-size:7px;color:var(--g3);text-decoration:none;padding:14px 24px;letter-spacing:1px;border-bottom:1px solid var(--g8);cursor:none;}
+.mob-menu a:hover,.mob-menu a.active{color:var(--wh);background:rgba(255,255,255,.03);}
+@media(max-width:700px){.hamburger{display:flex;}.nav-links,.nav-cta{display:none;}}
+
+/* ── PAGES ── */
+.page{display:none;min-height:100vh;padding-top:56px;}
+.page.active{display:block;animation:pgIn .3s ease;}
+@keyframes pgIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── BUTTONS ── */
+.btn{font-family:var(--px);font-size:clamp(6px,1.5vw,9px);padding:clamp(10px,2vw,14px) clamp(16px,3vw,24px);text-decoration:none;letter-spacing:1px;text-transform:uppercase;cursor:none;display:inline-block;position:relative;transition:transform .05s;white-space:nowrap;}
+.btn:active{transform:translate(3px,3px);}
+.btn-p{background:var(--wh);color:var(--bk);box-shadow:4px 4px 0 var(--g4);}
+.btn-p:hover{background:var(--g1);box-shadow:6px 6px 0 var(--g5);}
+.btn-o{background:transparent;color:var(--wh);border:2px solid var(--g5);box-shadow:4px 4px 0 var(--g7);}
+.btn-o:hover{border-color:var(--wh);}
+@media(hover:none){.btn{cursor:pointer;}}
+
+/* ── GRID BG ── */
+.gbg{background-image:linear-gradient(var(--g8) 1px,transparent 1px),linear-gradient(90deg,var(--g8) 1px,transparent 1px);background-size:32px 32px;}
+.gbg-l{background-image:linear-gradient(var(--g1) 1px,transparent 1px),linear-gradient(90deg,var(--g1) 1px,transparent 1px);background-size:32px 32px;}
+
+/* ── REVEAL ── */
+.rev{opacity:0;transform:translateY(16px);transition:opacity .5s ease,transform .5s ease;}
+.rev.vis{opacity:1;transform:translateY(0);}
+
+/* ═══════════════════════════════════
+   PAGE 1 — HERO
+═══════════════════════════════════ */
+#pg-home{background:var(--bk);position:relative;overflow:hidden;}
+
+/* Pixel constellation bg */
+.px-constellation{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.px-dot{position:absolute;background:var(--wh);image-rendering:pixelated;}
+
+/* Corner bracket decorations */
+.corner{position:absolute;width:clamp(20px,4vw,32px);height:clamp(20px,4vw,32px);pointer-events:none;z-index:3;}
+.corner-tl{top:72px;left:clamp(8px,2vw,20px);border-top:3px solid var(--g5);border-left:3px solid var(--g5);}
+.corner-tr{top:72px;right:clamp(8px,2vw,20px);border-top:3px solid var(--g5);border-right:3px solid var(--g5);}
+.corner-bl{bottom:0;left:clamp(8px,2vw,20px);border-bottom:3px solid var(--g5);border-left:3px solid var(--g5);}
+.corner-br{bottom:0;right:clamp(8px,2vw,20px);border-bottom:3px solid var(--g5);border-right:3px solid var(--g5);}
+
+/* Hero layout */
+.hero-wrap{position:relative;z-index:4;display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 56px - 100px);gap:0;}
+@media(max-width:900px){.hero-wrap{grid-template-columns:1fr;}}
+
+/* Hero left */
+.hero-left{padding:clamp(28px,5vw,72px) clamp(20px,5vw,60px);display:flex;flex-direction:column;justify-content:center;border-right:3px solid var(--g7);}
+@media(max-width:900px){.hero-left{border-right:none;border-bottom:3px solid var(--g7);padding:32px 20px;}}
+
+.hero-eyebrow{font-family:var(--px);font-size:clamp(5px,1.2vw,8px);color:var(--g4);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.hero-eyebrow::before{content:'';display:inline-block;width:8px;height:8px;background:var(--wh);animation:blink 1s step-end infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+h1.hero-t{font-family:var(--px);font-size:clamp(28px,6vw,56px);color:var(--wh);line-height:1.35;margin-bottom:8px;}
+h1.hero-t span{color:var(--g3);}
+.hero-sub{font-family:var(--px);font-size:clamp(8px,1.5vw,13px);color:var(--g5);margin-bottom:24px;letter-spacing:2px;}
+.hero-desc{font-family:var(--mn);font-size:clamp(12px,1.5vw,14px);color:var(--g2);line-height:1.8;margin-bottom:24px;max-width:480px;}
+
+/* Etymology box */
+.etym{background:var(--g9);border:1px solid var(--g6);padding:clamp(12px,2vw,18px) clamp(14px,2vw,20px);position:relative;margin-bottom:24px;}
+.etym::before{content:'// ETYMOLOGY';position:absolute;top:-9px;left:10px;font-family:var(--px);font-size:5px;color:var(--g4);background:var(--g9);padding:2px 6px;}
+.etym-row{display:flex;align-items:center;flex-wrap:wrap;gap:8px;}
+.etym-w{font-family:var(--px);font-size:clamp(6px,1.5vw,9px);color:var(--g2);}
+.etym-p{font-family:var(--px);font-size:clamp(8px,1.5vw,11px);color:var(--g5);}
+.etym-eq{font-family:var(--mn);font-size:clamp(10px,1.5vw,12px);color:var(--g4);margin-top:8px;}
+
+/* Badges */
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+.badge{font-family:var(--px);font-size:clamp(5px,1vw,7px);padding:5px 10px;background:var(--g8);color:var(--g2);border:2px solid var(--g6);text-transform:uppercase;letter-spacing:1px;position:relative;}
+.badge::after{content:'';position:absolute;bottom:-3px;right:-3px;width:100%;height:100%;background:var(--g7);z-index:-1;}
+
+.hero-cta{display:flex;gap:12px;flex-wrap:wrap;}
+
+/* Hero right — pixel art showcase */
+.hero-right{display:flex;align-items:center;justify-content:center;padding:clamp(24px,4vw,60px);position:relative;overflow:hidden;}
+@media(max-width:900px){.hero-right{padding:32px 20px;min-height:320px;}}
+
+/* Pixel art scene */
+.px-scene{position:relative;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:20px;}
+
+/* Logo frame */
+.logo-frame{position:relative;padding:clamp(20px,3vw,36px);border:2px solid var(--g6);}
+.logo-frame::before{content:'';position:absolute;top:-2px;left:-2px;width:clamp(12px,2vw,18px);height:clamp(12px,2vw,18px);border-top:3px solid var(--wh);border-left:3px solid var(--wh);}
+.logo-frame::after{content:'';position:absolute;bottom:-2px;right:-2px;width:clamp(12px,2vw,18px);height:clamp(12px,2vw,18px);border-bottom:3px solid var(--wh);border-right:3px solid var(--wh);}
+.lc-tr{position:absolute;top:-2px;right:-2px;width:clamp(12px,2vw,18px);height:clamp(12px,2vw,18px);border-top:3px solid var(--wh);border-right:3px solid var(--wh);}
+.lc-bl{position:absolute;bottom:-2px;left:-2px;width:clamp(12px,2vw,18px);height:clamp(12px,2vw,18px);border-bottom:3px solid var(--wh);border-left:3px solid var(--wh);}
+.logo-frame video{width:clamp(240px,18vw,180px);height:clamp(120px,18vw,180px);object-fit:contain;display:block;}
+
+/* Pixel art decorative floaters */
+.floater{position:absolute;pointer-events:none;image-rendering:pixelated;z-index:5;}
+.fl-1{top:8%;left:2%;animation:fl 3.5s ease-in-out infinite;}
+.fl-2{top:12%;right:4%;animation:fl 4.5s ease-in-out infinite .5s;}
+.fl-3{top:40%;left:0%;animation:fl 5s ease-in-out infinite 1s;}
+.fl-4{bottom:30%;right:2%;animation:fl 4s ease-in-out infinite .3s;}
+.fl-5{bottom:20%;left:5%;animation:fl 3.8s ease-in-out infinite .8s;}
+.fl-6{top:60%;right:5%;animation:fl2 4.2s ease-in-out infinite .2s;}
+.fl-7{top:25%;left:3%;animation:fl2 5.5s ease-in-out infinite 1.5s;}
+.fl-8{bottom:40%;right:0%;animation:fl 3.2s ease-in-out infinite 0.6s;}
+@keyframes fl{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+@keyframes fl2{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-8px) rotate(45deg);}}
+@media(max-width:600px){.fl-3,.fl-5,.fl-7,.fl-8{display:none;}}
+
+/* Mini terminal */
+.mini-term{background:var(--g9);border:2px solid var(--g7);padding:12px 16px;width:100%;max-width:280px;font-family:var(--mn);font-size:clamp(10px,1.5vw,12px);color:var(--g4);}
+.mini-term .ln{color:var(--g3);margin:2px 0;}
+.mini-term .cursor{color:var(--wh);animation:blink 1s step-end infinite;}
+
+/* Pixel XP bar */
+.xp-bar-wrap{width:100%;max-width:280px;}
+.xp-label{font-family:var(--px);font-size:5px;color:var(--g5);letter-spacing:2px;margin-bottom:6px;display:flex;justify-content:space-between;}
+.xp-track{height:8px;background:var(--g8);border:1px solid var(--g7);position:relative;overflow:hidden;}
+.xp-fill{height:100%;background:var(--wh);width:0;transition:width 1.5s ease;}
+.xp-fill.go{width:87%;}
+.xp-fill::after{content:'';position:absolute;top:0;right:0;bottom:0;width:4px;background:var(--g2);animation:blink .7s step-end infinite;}
+
+/* Pixel art icon grid decoration */
+.px-icon-row{display:flex;gap:12px;align-items:center;justify-content:center;flex-wrap:wrap;}
+.px-icon-item{display:flex;flex-direction:column;align-items:center;gap:6px;}
+.px-icon-label{font-family:var(--px);font-size:5px;color:var(--g5);letter-spacing:1px;text-align:center;}
+
+/* Pixel art cityscape at bottom of hero-right */
+.px-city{width:100%;max-width:340px;display:block;image-rendering:pixelated;}
+
+/* Stats bar */
+.hero-stats{position:relative;z-index:4;display:grid;grid-template-columns:repeat(4,1fr);border-top:3px solid var(--g7);}
+@media(max-width:600px){.hero-stats{grid-template-columns:repeat(2,1fr);}}
+.stat-item{padding:clamp(14px,2.5vw,24px) clamp(16px,3vw,32px);border-right:2px solid var(--g7);}
+.stat-item:nth-child(2){border-right:2px solid var(--g7);}
+.stat-item:nth-child(4),.stat-item:last-child{border-right:none;}
+@media(max-width:600px){.stat-item:nth-child(2n){border-right:none;}.stat-item:nth-child(1),.stat-item:nth-child(2){border-bottom:2px solid var(--g7);}}
+.stat-num{font-family:var(--px);font-size:clamp(14px,3vw,22px);color:var(--wh);margin-bottom:6px;}
+.stat-lbl{font-family:var(--mn);font-size:clamp(9px,1.5vw,11px);color:var(--g5);text-transform:uppercase;letter-spacing:2px;}
+
+/* Pixel art divider */
+.px-divider{height:4px;background:repeating-linear-gradient(90deg,var(--wh) 0,var(--wh) 8px,transparent 8px,transparent 16px);}
+.px-divider-sm{height:2px;background:repeating-linear-gradient(90deg,var(--g6) 0,var(--g6) 4px,transparent 4px,transparent 8px);}
+
+/* ═══════════════════════════════════
+   PAGE 2 — SERVICES
+═══════════════════════════════════ */
+#pg-services{background:var(--bk);position:relative;overflow:hidden;}
+#pg-services .gbg{position:absolute;inset:0;opacity:.35;}
+
+/* Section header */
+.srv-hdr{position:relative;z-index:2;padding:clamp(32px,5vw,64px) clamp(20px,5vw,60px) 0;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;border-bottom:3px solid var(--g7);padding-bottom:clamp(24px,4vw,40px);}
+.sec-label{font-family:var(--px);font-size:clamp(5px,1vw,7px);color:var(--g5);letter-spacing:3px;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.sec-label::before{content:'';display:block;width:20px;height:3px;background:var(--wh);}
+.sec-title{font-family:var(--px);font-size:clamp(14px,2.5vw,26px);color:var(--wh);line-height:1.5;}
+.sec-desc{font-family:var(--mn);font-size:clamp(12px,1.5vw,13px);color:var(--g4);margin-top:10px;max-width:400px;line-height:1.7;}
+.rpg-hud{font-family:var(--px);font-size:clamp(5px,1vw,7px);color:var(--g5);display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;}
+.rpg-hud span{color:var(--g3);}
+
+/* RPG layout */
+.rpg-layout{position:relative;z-index:2;display:grid;grid-template-columns:clamp(240px,28vw,320px) 1fr;min-height:560px;border-bottom:3px solid var(--g7);}
+@media(max-width:800px){.rpg-layout{grid-template-columns:1fr;grid-template-rows:auto 1fr;}}
+
+/* RPG menu */
+.rpg-menu{border-right:3px solid var(--g7);background:rgba(0,0,0,.5);display:flex;flex-direction:column;}
+@media(max-width:800px){.rpg-menu{border-right:none;border-bottom:3px solid var(--g7);flex-direction:row;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;}}
+.rpg-menu-hdr{padding:16px 20px;border-bottom:2px solid var(--g7);font-family:var(--px);font-size:clamp(5px,1vw,7px);color:var(--g5);letter-spacing:2px;display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.rpg-menu-hdr::before{content:'';width:7px;height:7px;background:var(--g5);display:block;animation:blink 1.2s step-end infinite;}
+@media(max-width:800px){.rpg-menu-hdr{display:none;}}
+
+.rpg-item{padding:clamp(14px,2.5vw,22px) clamp(16px,2.5vw,24px);border-bottom:2px solid var(--g7);cursor:none;position:relative;display:flex;align-items:center;gap:14px;transition:background .1s;flex-shrink:0;}
+@media(max-width:800px){.rpg-item{border-bottom:none;border-right:2px solid var(--g7);min-width:120px;flex-direction:column;align-items:flex-start;padding:12px 14px;cursor:pointer;}}
+@media(hover:none){.rpg-item{cursor:pointer;}}
+.rpg-item::before{content:'';position:absolute;left:0;top:0;bottom:0;width:0;background:var(--wh);transition:width .1s;}
+@media(max-width:800px){.rpg-item::before{left:0;top:auto;bottom:0;width:100%;height:0;transition:height .1s;}}
+.rpg-item.active,.rpg-item:hover{background:rgba(255,255,255,.04);}
+.rpg-item.active::before{width:4px;}
+@media(max-width:800px){.rpg-item.active::before{width:100%;height:3px;}}
+
+.rpg-icon{width:36px;height:36px;border:2px solid var(--g6);display:flex;align-items:center;justify-content:center;background:var(--g8);flex-shrink:0;transition:border-color .1s;}
+.rpg-item.active .rpg-icon{border-color:var(--wh);background:var(--g7);}
+@media(max-width:800px){.rpg-icon{width:28px;height:28px;}}
+
+.rpg-item-info{flex:1;min-width:0;}
+.rpg-key{font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g5);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
+.rpg-item.active .rpg-key{color:var(--g3);}
+.rpg-name{font-family:var(--px);font-size:clamp(6px,1vw,8px);color:var(--g3);line-height:1.5;}
+.rpg-item.active .rpg-name{color:var(--wh);}
+.rpg-arr{font-family:var(--px);font-size:12px;color:var(--wh);opacity:0;flex-shrink:0;}
+.rpg-item.active .rpg-arr{opacity:1;animation:blink .8s step-end infinite;}
+@media(max-width:800px){.rpg-arr{display:none;}}
+
+.rpg-menu-ftr{margin-top:auto;padding:14px 20px;border-top:2px solid var(--g7);font-family:var(--mn);font-size:clamp(9px,1.5vw,11px);color:var(--g6);line-height:1.7;}
+@media(max-width:800px){.rpg-menu-ftr{display:none;}}
+
+/* Expandable short description inside menu item */
+.rpg-item-desc{
+  max-height:0;overflow:hidden;
+  font-family:var(--mn);font-size:clamp(10px,1.3vw,12px);
+  color:var(--g4);line-height:1.6;
+  margin-top:0;padding-top:0;
+  border-top:0px solid var(--g7);
+  transition:max-height .35s ease, margin-top .35s ease, padding-top .35s ease, border-top-width .35s ease, color .2s;
+  grid-column:1/-1;width:100%;
+}
+.rpg-item.active .rpg-item-desc{
+  max-height:80px;
+  margin-top:10px;padding-top:10px;
+  border-top:1px solid var(--g7);
+  color:var(--g3);
+}
+/* On mobile tab bar, wrap item content to allow desc below */
+@media(max-width:800px){
+  .rpg-item{flex-wrap:wrap;}
+  .rpg-item-desc{font-size:10px;margin-top:0;}
+  .rpg-item.active .rpg-item-desc{max-height:60px;margin-top:8px;padding-top:8px;}
+}
+
+/* ── SERVICE ACCORDION ITEMS ── */
+.svc-acc{border-bottom:1px solid var(--g8);}
+.svc-acc-hdr{display:flex;align-items:center;gap:8px;padding:8px 0;cursor:none;user-select:none;}
+@media(hover:none){.svc-acc-hdr{cursor:pointer;}}
+.svc-acc-arrow{font-family:var(--px);font-size:7px;color:var(--g5);flex-shrink:0;transition:transform .2s,color .15s;}
+.svc-acc-name{font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g3);flex:1;transition:color .15s;line-height:1.3;}
+.svc-acc-plus{width:14px;height:14px;border:1px solid var(--g6);display:flex;align-items:center;justify-content:center;font-family:var(--px);font-size:8px;color:var(--g6);flex-shrink:0;transition:transform .25s ease,color .15s,border-color .15s;}
+.svc-acc-hdr:hover .svc-acc-name{color:var(--wh);}
+.svc-acc-hdr:hover .svc-acc-plus{border-color:var(--g4);color:var(--g4);}
+.svc-acc.open .svc-acc-arrow{color:var(--wh);transform:translateX(4px);}
+.svc-acc.open .svc-acc-name{color:var(--wh);}
+.svc-acc.open .svc-acc-plus{transform:rotate(45deg);color:var(--wh);border-color:var(--wh);}
+.svc-acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .25s ease;opacity:0;}
+.svc-acc.open .svc-acc-body{max-height:80px;opacity:1;}
+.svc-acc-txt{font-family:var(--mn);font-size:clamp(10px,1.2vw,11px);color:var(--g5);line-height:1.65;padding:2px 0 10px 20px;border-left:2px solid var(--g7);margin-left:1px;}
+
+/* RPG detail */
+.rpg-detail{position:relative;background:#0d0d0d;overflow:hidden;}
+.rpg-panel{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .25s;padding:clamp(20px,4vw,44px);display:flex;flex-direction:column;overflow-y:auto;}
+.rpg-panel.active{opacity:1;pointer-events:auto;}
+@media(max-width:800px){.rpg-panel{position:relative;opacity:0;pointer-events:none;display:none;padding:24px 20px;}.rpg-panel.active{display:flex;opacity:1;pointer-events:auto;}}
+
+.p-topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:clamp(20px,3vw,32px);padding-bottom:clamp(16px,2.5vw,24px);border-bottom:2px solid var(--g7);}
+.p-id{font-family:var(--px);font-size:clamp(5px,1vw,7px);color:var(--g5);letter-spacing:2px;}
+.p-badge{font-family:var(--px);font-size:clamp(5px,1vw,6px);padding:5px 10px;border:2px solid var(--g6);color:var(--g3);text-transform:uppercase;letter-spacing:1px;}
+.p-title{font-family:var(--px);font-size:clamp(12px,2vw,20px);color:var(--wh);line-height:1.5;margin-bottom:12px;}
+.p-desc{font-family:var(--mn);font-size:clamp(12px,1.5vw,14px);color:var(--g3);line-height:1.8;margin-bottom:clamp(20px,3vw,32px);}
+.p-deco{position:absolute;top:0;right:0;font-family:var(--px);font-size:clamp(60px,12vw,120px);color:var(--g8);line-height:1;pointer-events:none;opacity:.4;user-select:none;}
+
+/* Stat bars */
+.stat-bars{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,2vw,16px);margin-bottom:clamp(20px,3vw,32px);}
+@media(max-width:500px){.stat-bars{grid-template-columns:1fr;}}
+.sb-row{display:flex;flex-direction:column;gap:5px;}
+.sb-lbl{display:flex;justify-content:space-between;font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g4);letter-spacing:1px;text-transform:uppercase;}
+.sb-track{height:8px;background:var(--g8);border:1px solid var(--g7);overflow:hidden;}
+.sb-fill{height:100%;background:var(--wh);width:0;transition:width 1s ease;position:relative;}
+.sb-fill::after{content:'';position:absolute;top:0;right:0;bottom:0;width:4px;background:var(--g3);animation:blink .6s step-end infinite;}
+
+/* Panel grid */
+.p-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,3vw,24px);margin-bottom:clamp(20px,3vw,28px);}
+@media(max-width:560px){.p-grid{grid-template-columns:1fr;}}
+.p-col-lbl{font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g5);letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
+.p-col-lbl::before{content:'';display:block;width:10px;height:2px;background:var(--g5);}
+.p-li{font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g3);padding:5px 0;border-bottom:1px solid var(--g8);display:flex;align-items:center;gap:8px;}
+.p-li::before{content:'▸';color:var(--g5);font-size:9px;flex-shrink:0;}
+.deliv-item{font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g3);padding:5px 0;border-bottom:1px solid var(--g8);display:flex;align-items:center;gap:8px;}
+.deliv-dot{width:5px;height:5px;background:var(--wh);flex-shrink:0;}
+
+.p-note{background:var(--g8);border-left:3px solid var(--g5);padding:10px 14px;margin-bottom:20px;font-family:var(--mn);font-size:clamp(11px,1.5vw,12px);color:var(--g4);line-height:1.6;}
+.p-cta{margin-top:auto;padding-top:clamp(16px,2.5vw,24px);border-top:2px solid var(--g7);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.p-cta-txt{font-family:var(--mn);font-size:clamp(11px,1.5vw,12px);color:var(--g5);line-height:1.6;}
+
+/* Package builder */
+.pkg-builder{position:relative;z-index:2;padding:clamp(32px,5vw,60px) clamp(20px,5vw,60px);}
+.pkg-lbl{font-family:var(--px);font-size:clamp(6px,1vw,8px);color:var(--g5);letter-spacing:2px;margin-bottom:6px;}
+.pkg-ttl{font-family:var(--px);font-size:clamp(12px,2vw,20px);color:var(--wh);margin-bottom:clamp(20px,3vw,32px);line-height:1.5;}
+.pkg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:clamp(20px,3vw,32px);}
+@media(max-width:800px){.pkg-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:400px){.pkg-grid{grid-template-columns:1fr;}}
+.pkg-item{border:2px solid var(--g6);padding:clamp(14px,2vw,20px) clamp(12px,2vw,16px);cursor:none;position:relative;transition:all .1s;user-select:none;}
+@media(hover:none){.pkg-item{cursor:pointer;}}
+.pkg-item.sel{border-color:var(--wh);background:rgba(255,255,255,.04);}
+.pkg-chk{width:14px;height:14px;border:2px solid var(--g5);margin-bottom:10px;display:flex;align-items:center;justify-content:center;font-family:var(--px);font-size:7px;color:var(--wh);}
+.pkg-item.sel .pkg-chk{background:var(--wh);border-color:var(--wh);color:var(--bk);}
+.pkg-nm{font-family:var(--px);font-size:clamp(5px,1vw,7px);color:var(--g3);line-height:1.6;margin-bottom:6px;}
+.pkg-item.sel .pkg-nm{color:var(--wh);}
+.pkg-sb{font-family:var(--mn);font-size:clamp(10px,1.5vw,11px);color:var(--g5);line-height:1.4;}
+.pkg-sum{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:clamp(14px,2vw,20px) clamp(16px,2.5vw,24px);border:2px solid var(--g6);flex-wrap:wrap;}
+.pkg-count{font-family:var(--px);font-size:clamp(6px,1vw,7px);color:var(--g4);letter-spacing:1px;flex-shrink:0;}
+.pkg-count span{color:var(--wh);}
+.pkg-tags{display:flex;flex-wrap:wrap;gap:6px;flex:1;}
+.pkg-tag{padding:4px 8px;background:var(--g7);border:1px solid var(--g6);font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g3);}
+.pkg-none{font-family:var(--mn);font-size:clamp(11px,1.5vw,12px);color:var(--g6);font-style:italic;}
+
+/* ═══════════════════════════════════
+   PAGE 3 — SHOWCASE
+═══════════════════════════════════ */
+#pg-showcase{background:var(--g8);position:relative;overflow:hidden;}
+#pg-showcase .gbg{position:absolute;inset:0;opacity:.3;}
+
+.sh-hdr{position:relative;z-index:2;padding:clamp(32px,5vw,72px) clamp(20px,5vw,60px) clamp(24px,4vw,48px);border-bottom:3px solid var(--g7);display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.sh-title{font-family:var(--px);font-size:clamp(16px,3vw,32px);color:var(--wh);line-height:1.5;}
+.sh-intro{position:relative;z-index:2;padding:clamp(20px,3vw,40px) clamp(20px,5vw,60px);font-family:var(--mn);font-size:clamp(12px,1.5vw,14px);color:var(--g4);max-width:600px;line-height:1.8;}
+.sh-filters{position:relative;z-index:2;padding:0 clamp(20px,5vw,60px) clamp(24px,4vw,40px);display:flex;gap:4px;flex-wrap:wrap;}
+.flt{font-family:var(--px);font-size:clamp(5px,1vw,6px);padding:8px 12px;background:transparent;color:var(--g4);border:2px solid var(--g6);cursor:none;letter-spacing:1px;text-transform:uppercase;transition:all .1s;}
+@media(hover:none){.flt{cursor:pointer;}}
+.flt:hover,.flt.active{background:var(--wh);color:var(--bk);border-color:var(--wh);}
+
+.proj-grid{position:relative;z-index:2;padding:0 clamp(20px,5vw,60px);display:grid;grid-template-columns:repeat(3,1fr);gap:4px;}
+@media(max-width:900px){.proj-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.proj-grid{grid-template-columns:1fr;}}
+.proj-card{background:var(--g7);border:2px solid var(--g6);position:relative;overflow:hidden;cursor:none;aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .1s;}
+.proj-card:hover{transform:translate(-3px,-3px);box-shadow:3px 3px 0 var(--g5);z-index:10;}
+.proj-card.feat{grid-column:span 2;aspect-ratio:auto;min-height:280px;}
+@media(max-width:900px){.proj-card.feat{grid-column:span 1;aspect-ratio:4/3;min-height:auto;}}
+@media(hover:none){.proj-card{cursor:pointer;}.proj-card:hover{transform:none;box-shadow:none;}}
+.proj-art{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;}
+.proj-ov{position:absolute;inset:0;background:rgba(0,0,0,.88);opacity:0;transition:opacity .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;}
+.proj-card:hover .proj-ov{opacity:1;}
+@media(hover:none){.proj-ov{opacity:1;background:rgba(0,0,0,.6);}}
+.ov-label{font-family:var(--px);font-size:clamp(6px,1vw,7px);color:var(--wh);letter-spacing:2px;text-align:center;}
+.ov-tag{font-family:var(--mn);font-size:clamp(10px,1.5vw,11px);color:var(--g4);text-align:center;}
+.ov-btn{font-family:var(--px);font-size:clamp(5px,1vw,6px);padding:7px 14px;background:var(--wh);color:var(--bk);text-decoration:none;letter-spacing:1px;text-transform:uppercase;}
+.proj-info{position:relative;z-index:2;padding:clamp(10px,2vw,16px);background:linear-gradient(0deg,rgba(0,0,0,.92) 0%,transparent 100%);}
+.proj-cat{font-family:var(--px);font-size:clamp(4px,0.8vw,5px);color:var(--g4);letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;}
+.proj-nm{font-family:var(--px);font-size:clamp(6px,1vw,8px);color:var(--wh);line-height:1.5;}
+
+.sh-cta{position:relative;z-index:2;margin:clamp(32px,5vw,60px) clamp(20px,5vw,60px) 0;padding:clamp(24px,4vw,48px);border:2px solid var(--g6);display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
+.sh-cta-ttl{font-family:var(--px);font-size:clamp(10px,1.8vw,18px);color:var(--wh);line-height:1.6;margin-bottom:10px;}
+.sh-cta-sub{font-family:var(--mn);font-size:clamp(12px,1.5vw,13px);color:var(--g4);line-height:1.7;}
+.sh-cta-btns{display:flex;flex-direction:column;gap:10px;align-items:flex-start;flex-shrink:0;}
+
+/* FOOTER */
+footer{background:var(--bk);border-top:3px solid var(--g7);padding:clamp(24px,4vw,40px) clamp(20px,5vw,60px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;}
+.ft-logo{display:flex;align-items:center;gap:10px;}
+.ft-logo img{width:30px;height:30px;object-fit:contain;}
+.ft-copy{font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g6);line-height:1.8;}
+.ft-tag{font-family:var(--mn);font-size:clamp(11px,1.5vw,12px);color:var(--g6);}
+.ft-tag span{color:var(--g4);}
+
+/* spacer */
+.pb80{padding-bottom:clamp(40px,8vw,80px);}
+
+/* ═══ PROJECT MANAGER CSS ═══ */
+/* Admin toggle */
+.admin-toggle{font-family:var(--px);font-size:clamp(5px,1vw,6px);padding:7px 12px;background:transparent;border:1px solid var(--g6);color:var(--g5);cursor:none;letter-spacing:1px;display:flex;align-items:center;gap:6px;transition:all .1s;}
+.admin-toggle:hover{border-color:var(--g4);color:var(--g3);}
+.admin-toggle.unlocked{border-color:var(--wh);color:var(--wh);}
+@media(hover:none){.admin-toggle{cursor:pointer;}}
+.admin-add-btn{font-family:var(--px);font-size:clamp(5px,1vw,7px);padding:10px 18px;background:var(--wh);color:var(--bk);border:none;cursor:none;letter-spacing:1px;display:none;align-items:center;gap:8px;animation:pgIn .3s ease;}
+.admin-add-btn.show{display:flex;}
+@media(hover:none){.admin-add-btn{cursor:pointer;}}
+
+/* Modal overlay */
+.pm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px);}
+.pm-overlay.open{display:flex;animation:pgIn .2s ease;}
+
+/* Modal box */
+.pm-modal{background:var(--g9);border:2px solid var(--g6);width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;}
+.pm-modal-hdr{padding:20px 24px;border-bottom:2px solid var(--g7);display:flex;align-items:center;justify-content:space-between;}
+.pm-modal-title{font-family:var(--px);font-size:clamp(7px,1.5vw,10px);color:var(--wh);letter-spacing:1px;}
+.pm-modal-close{font-family:var(--px);font-size:12px;color:var(--g5);background:none;border:none;cursor:none;padding:4px 8px;transition:color .1s;}
+.pm-modal-close:hover{color:var(--wh);}
+@media(hover:none){.pm-modal-close{cursor:pointer;}}
+.pm-modal-body{padding:24px;}
+
+/* Form fields */
+.pm-field{margin-bottom:20px;}
+.pm-label{font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g4);letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;display:block;}
+.pm-input{width:100%;background:var(--g8);border:1px solid var(--g6);color:var(--wh);font-family:var(--mn);font-size:clamp(12px,1.5vw,13px);padding:10px 12px;outline:none;transition:border-color .1s;}
+.pm-input:focus{border-color:var(--wh);}
+.pm-input::placeholder{color:var(--g6);}
+.pm-select{width:100%;background:var(--g8);border:1px solid var(--g6);color:var(--wh);font-family:var(--mn);font-size:clamp(12px,1.5vw,13px);padding:10px 12px;outline:none;appearance:none;cursor:none;}
+@media(hover:none){.pm-select{cursor:pointer;}}
+.pm-textarea{width:100%;background:var(--g8);border:1px solid var(--g6);color:var(--wh);font-family:var(--mn);font-size:clamp(12px,1.5vw,13px);padding:10px 12px;outline:none;resize:vertical;min-height:70px;transition:border-color .1s;}
+.pm-textarea:focus{border-color:var(--wh);}
+.pm-textarea::placeholder{color:var(--g6);}
+
+/* Source type tabs */
+.pm-type-tabs{display:flex;gap:0;margin-bottom:16px;}
+.pm-tab{font-family:var(--px);font-size:clamp(5px,1vw,7px);padding:8px 16px;background:var(--g8);border:1px solid var(--g6);color:var(--g5);cursor:none;letter-spacing:1px;transition:all .1s;flex:1;text-align:center;}
+.pm-tab:hover{color:var(--g3);}
+.pm-tab.active{background:var(--wh);color:var(--bk);border-color:var(--wh);}
+@media(hover:none){.pm-tab{cursor:pointer;}}
+
+/* Drop zone */
+.pm-dropzone{border:2px dashed var(--g6);padding:clamp(24px,4vw,40px) 20px;text-align:center;cursor:none;transition:all .2s;position:relative;}
+.pm-dropzone:hover,.pm-dropzone.drag{border-color:var(--wh);background:rgba(255,255,255,.03);}
+.pm-dropzone-icon{font-family:var(--px);font-size:20px;color:var(--g6);margin-bottom:10px;}
+.pm-dropzone-txt{font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g5);line-height:1.6;}
+.pm-dropzone-hint{font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g7);letter-spacing:1px;margin-top:6px;}
+.pm-dropzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:none;width:100%;height:100%;}
+@media(hover:none){.pm-dropzone,.pm-dropzone input[type=file]{cursor:pointer;}}
+.pm-file-preview{margin-top:10px;padding:10px 12px;background:var(--g8);border:1px solid var(--g6);display:none;align-items:center;gap:10px;}
+.pm-file-preview.show{display:flex;}
+.pm-file-thumb{width:40px;height:40px;object-fit:cover;border:1px solid var(--g6);flex-shrink:0;}
+.pm-file-name{font-family:var(--mn);font-size:11px;color:var(--g3);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pm-file-clear{font-family:var(--px);font-size:8px;color:var(--g5);background:none;border:none;cursor:none;padding:2px 6px;}
+.pm-file-clear:hover{color:var(--wh);}
+@media(hover:none){.pm-file-clear{cursor:pointer;}}
+
+/* Submit */
+.pm-submit{font-family:var(--px);font-size:clamp(6px,1vw,8px);padding:12px 24px;background:var(--wh);color:var(--bk);border:none;cursor:none;letter-spacing:1px;width:100%;transition:background .1s;}
+.pm-submit:hover{background:var(--g1);}
+.pm-submit:disabled{background:var(--g6);color:var(--g4);cursor:not-allowed;}
+@media(hover:none){.pm-submit{cursor:pointer;}}
+.pm-error{font-family:var(--mn);font-size:11px;color:#e55;margin-top:8px;display:none;}
+.pm-error.show{display:block;}
+
+/* Password modal */
+.pw-modal{background:var(--g9);border:2px solid var(--g6);width:100%;max-width:360px;padding:32px;}
+.pw-title{font-family:var(--px);font-size:clamp(8px,1.5vw,11px);color:var(--wh);margin-bottom:8px;letter-spacing:1px;}
+.pw-sub{font-family:var(--mn);font-size:12px;color:var(--g5);margin-bottom:24px;line-height:1.6;}
+
+/* Empty state */
+.proj-empty{grid-column:1/-1;padding:clamp(40px,8vw,80px) 20px;text-align:center;border:2px dashed var(--g7);}
+.proj-empty-icon{font-family:var(--px);font-size:32px;color:var(--g7);margin-bottom:16px;}
+.proj-empty-title{font-family:var(--px);font-size:clamp(8px,1.5vw,11px);color:var(--g5);margin-bottom:10px;line-height:1.6;}
+.proj-empty-sub{font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g6);line-height:1.7;}
+
+/* Dynamic cards */
+.proj-card-dyn{background:var(--g7);border:2px solid var(--g6);position:relative;overflow:hidden;aspect-ratio:4/3;display:flex;flex-direction:column;justify-content:flex-end;transition:transform .1s;}
+.proj-card-dyn:hover{transform:translate(-3px,-3px);box-shadow:3px 3px 0 var(--g5);z-index:10;}
+@media(hover:none){.proj-card-dyn:hover{transform:none;box-shadow:none;}}
+.proj-card-dyn .proj-thumb{position:absolute;inset:0;object-fit:cover;width:100%;height:100%;}
+.proj-card-dyn .proj-thumb-bg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--g8);}
+.proj-card-dyn .proj-ov{position:absolute;inset:0;background:rgba(0,0,0,.88);opacity:0;transition:opacity .2s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:20px;}
+.proj-card-dyn:hover .proj-ov{opacity:1;}
+@media(hover:none){.proj-card-dyn .proj-ov{opacity:1;background:rgba(0,0,0,.6);}}
+
+/* Delete button on card */
+.proj-del-btn{position:absolute;top:8px;right:8px;z-index:20;background:rgba(0,0,0,.8);border:1px solid var(--g6);font-family:var(--px);font-size:7px;color:var(--g4);padding:4px 8px;cursor:none;display:none;transition:all .1s;}
+.proj-del-btn:hover{background:rgba(200,0,0,.8);border-color:#e55;color:var(--wh);}
+.admin-mode .proj-del-btn{display:block;}
+@media(hover:none){.proj-del-btn{cursor:pointer;}}
+
+/* Lightbox */
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:10001;display:none;align-items:center;justify-content:center;padding:20px;}
+.lightbox.open{display:flex;}
+.lightbox-inner{position:relative;max-width:90vw;max-height:90vh;}
+.lightbox img{max-width:100%;max-height:85vh;object-fit:contain;display:block;}
+.lightbox-close{position:absolute;top:-36px;right:0;font-family:var(--px);font-size:10px;color:var(--g4);background:none;border:none;cursor:none;padding:4px 8px;}
+.lightbox-close:hover{color:var(--wh);}
+@media(hover:none){.lightbox-close{cursor:pointer;}}
+.lightbox-caption{font-family:var(--px);font-size:6px;color:var(--g5);text-align:center;margin-top:12px;letter-spacing:2px;}
+
+/* Count badge */
+.proj-count-badge{font-family:var(--px);font-size:clamp(12px,2vw,22px);color:var(--wh);}
+
+/* admin mode indicator */
+body.admin-mode .sh-hdr{border-bottom-color:var(--g5);}
+</style>
+<!-- Firebase SDK (Firestore) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA5xfXgE3jJ7WEMYcpgmGPCHxkNGOltTSc",
+    authDomain: "devign-studio.firebaseapp.com",
+    projectId: "devign-studio",
+    storageBucket: "devign-studio.firebasestorage.app",
+    messagingSenderId: "250054270107",
+    appId: "1:250054270107:web:4a261c979a90cdba713a3e"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  const db = getFirestore(fbApp);
+
+  // Expose what the rest of the (non-module) script needs, on window
+  window.__fb = { db, collection, getDocs, addDoc, deleteDoc, doc, query, orderBy };
+  window.__fbReady = true;
+  window.dispatchEvent(new Event('firebaseready'));
+</script>
+</head>
+<body>
+
+<div id="cur"></div>
+<div id="cur2"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo" onclick="showPage('pg-home',this);return false;">
+    <img src="Devign studio.jpeg" alt="Devign Studio">
+    <div class="nav-logo-txt">DEVIGN<br>STUDIO</div>
+  </a>
+  <button class="hamburger" onclick="toggleMob()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links">
+    <li><a href="#" data-page="pg-home" class="active" onclick="navTo('pg-home');return false;">// Home</a></li>
+    <li><a href="#" data-page="pg-services" onclick="navTo('pg-services');return false;">// Services</a></li>
+    <li><a href="#" data-page="pg-showcase" onclick="navTo('pg-showcase');return false;">// Work</a></li>
+  </ul>
+  <a href="https://ig.me/m/devign__studio" class="nav-cta">Contact Us</a>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <a href="#" data-page="pg-home" class="active" onclick="navTo('pg-home');toggleMob();return false;">// Home</a>
+  <a href="#" data-page="pg-services" onclick="navTo('pg-services');toggleMob();return false;">// Services</a>
+  <a href="#" data-page="pg-showcase" onclick="navTo('pg-showcase');toggleMob();return false;">// Work</a>
+  <a href="https://ig.me/m/devign__studio" style="color:var(--wh);">Contact Us →</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1 — COMPANY PROFILE
+═══════════════════════════════════════════ -->
+<div class="page active" id="pg-home">
+
+  <!-- Pixel constellation background -->
+  <div class="px-constellation" id="constellation"></div>
+
+  <!-- Corner brackets -->
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <!-- Floating pixel decorations -->
+  <!-- Diamond -->
+  <div class="floater fl-1">
+    <svg width="28" height="28" viewBox="0 0 7 7" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="0" width="1" height="1" fill="#555"/>
+      <rect x="2" y="1" width="3" height="1" fill="#555"/>
+      <rect x="1" y="2" width="5" height="1" fill="#555"/>
+      <rect x="0" y="3" width="7" height="1" fill="#555"/>
+      <rect x="1" y="4" width="5" height="1" fill="#555"/>
+      <rect x="2" y="5" width="3" height="1" fill="#555"/>
+      <rect x="3" y="6" width="1" height="1" fill="#555"/>
+    </svg>
+  </div>
+  <!-- Cross / plus -->
+  <div class="floater fl-2">
+    <svg width="24" height="24" viewBox="0 0 5 5" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="2" y="0" width="1" height="5" fill="#444"/>
+      <rect x="0" y="2" width="5" height="1" fill="#444"/>
+    </svg>
+  </div>
+  <!-- Star -->
+  <div class="floater fl-3">
+    <svg width="32" height="32" viewBox="0 0 8 8" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="3" y="0" width="2" height="1" fill="#666"/>
+      <rect x="3" y="7" width="2" height="1" fill="#666"/>
+      <rect x="0" y="3" width="1" height="2" fill="#666"/>
+      <rect x="7" y="3" width="1" height="2" fill="#666"/>
+      <rect x="1" y="1" width="1" height="1" fill="#555"/>
+      <rect x="6" y="1" width="1" height="1" fill="#555"/>
+      <rect x="1" y="6" width="1" height="1" fill="#555"/>
+      <rect x="6" y="6" width="1" height="1" fill="#555"/>
+      <rect x="3" y="3" width="2" height="2" fill="#777"/>
+    </svg>
+  </div>
+  <!-- Bracket < / > -->
+  <div class="floater fl-4">
+    <svg width="36" height="20" viewBox="0 0 9 5" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="2" width="1" height="1" fill="#666"/>
+      <rect x="1" y="1" width="1" height="1" fill="#555"/>
+      <rect x="1" y="3" width="1" height="1" fill="#555"/>
+      <rect x="4" y="0" width="1" height="5" fill="#444"/>
+      <rect x="8" y="2" width="1" height="1" fill="#666"/>
+      <rect x="7" y="1" width="1" height="1" fill="#555"/>
+      <rect x="7" y="3" width="1" height="1" fill="#555"/>
+    </svg>
+  </div>
+  <!-- Pixel square -->
+  <div class="floater fl-5">
+    <svg width="20" height="20" viewBox="0 0 5 5" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="5" height="1" fill="#444"/>
+      <rect x="0" y="4" width="5" height="1" fill="#444"/>
+      <rect x="0" y="0" width="1" height="5" fill="#444"/>
+      <rect x="4" y="0" width="1" height="5" fill="#444"/>
+    </svg>
+  </div>
+  <!-- Dot cluster -->
+  <div class="floater fl-6">
+    <svg width="24" height="24" viewBox="0 0 6 6" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="2" height="2" fill="#333"/>
+      <rect x="4" y="0" width="2" height="2" fill="#444"/>
+      <rect x="2" y="2" width="2" height="2" fill="#555"/>
+      <rect x="0" y="4" width="2" height="2" fill="#444"/>
+      <rect x="4" y="4" width="2" height="2" fill="#333"/>
+    </svg>
+  </div>
+  <!-- Arrow -->
+  <div class="floater fl-7">
+    <svg width="28" height="16" viewBox="0 0 7 4" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="1" width="5" height="2" fill="#444"/>
+      <rect x="4" y="0" width="1" height="1" fill="#444"/>
+      <rect x="5" y="1" width="1" height="2" fill="#555"/>
+      <rect x="6" y="1" width="1" height="2" fill="#666"/>
+      <rect x="4" y="3" width="1" height="1" fill="#444"/>
+    </svg>
+  </div>
+  <!-- Zigzag -->
+  <div class="floater fl-8">
+    <svg width="32" height="16" viewBox="0 0 8 4" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="0" width="2" height="2" fill="#333"/>
+      <rect x="2" y="2" width="2" height="2" fill="#333"/>
+      <rect x="4" y="0" width="2" height="2" fill="#333"/>
+      <rect x="6" y="2" width="2" height="2" fill="#333"/>
+    </svg>
+  </div>
+
+  <!-- HERO CONTENT -->
+  <div class="gbg" style="position:absolute;inset:0;opacity:.35;"></div>
+  <div class="hero-wrap">
+
+    <!-- LEFT -->
+    <div class="hero-left">
+      <div class="hero-eyebrow">Creative Digital Platform</div>
+      <h1 class="hero-t">DEVIGN<br><span>STUDIO</span></h1>
+      <p class="hero-sub">&lt; Design &times; Develop /&gt;</p>
+      <p class="hero-desc">A creative digital platform specializing in <strong>branding</strong>, <strong>graphic design</strong>, and <strong>web development</strong> — built for individuals, startups, and SMEs who want a professional, visually consistent digital presence.</p>
+
+      <div class="etym rev">
+        <div class="etym-row">
+          <span class="etym-w">DESIGN</span>
+          <span class="etym-p">+</span>
+          <span class="etym-w">DEVELOP</span>
+          <span class="etym-p">=</span>
+          <span class="etym-w" style="color:var(--wh)">DEVIGN</span>
+        </div>
+        <div class="etym-eq">// bridging creative vision with digital execution</div>
+      </div>
+
+      <div class="badges rev">
+        <span class="badge">Graphic Design</span>
+        <span class="badge">Brand Identity</span>
+        <span class="badge">Web Dev</span>
+        <span class="badge">Digital Presentation</span>
+        <span class="badge">Creative Solutions</span>
+      </div>
+
+      <div class="hero-cta rev">
+        <a href="#" class="btn btn-p" onclick="navTo('pg-services');return false;">Our Services</a>
+        <a href="#" class="btn btn-o" onclick="navTo('pg-showcase');return false;">View Work</a>
+      </div>
+    </div>
+
+    <!-- RIGHT — Pixel Art Showcase -->
+    <div class="hero-right">
+      <div class="px-scene">
+
+        <!-- Logo frame -->
+        <div class="logo-frame rev">
+          <div class="lc-tr"></div><div class="lc-bl"></div>
+  
+          <video autoplay loop muted playsinline>
+            <source src="devign motion.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <!-- Pixel bracket label -->
+        <div style="font-family:var(--px);font-size:clamp(8px,1.5vw,11px);color:var(--g6);letter-spacing:4px;text-align:center;">&lt;&nbsp;/&nbsp;&gt;</div>
+
+        <!-- XP Bar -->
+        <div class="xp-bar-wrap rev">
+          <div class="xp-label"><span>STUDIO LEVEL</span><span>LVL 1 &rarr;</span></div>
+          <div class="xp-track"><div class="xp-fill" id="xpFill"></div></div>
+          <div class="xp-label" style="margin-top:4px;"><span>CREATIVITY EXP</span><span>87%</span></div>
+        </div>
+
+        <!-- Mini terminal -->
+        <div class="mini-term rev">
+          <div style="color:var(--g6);margin-bottom:6px;"># devign.studio</div>
+          <div class="ln">&gt; init brand_identity</div>
+          <div class="ln">&gt; design_assets&nbsp;&nbsp;&nbsp;OK</div>
+          <div class="ln">&gt; deploy website&nbsp;&nbsp;&nbsp;OK</div>
+          <div class="ln">&gt; launch project&nbsp;&nbsp;&nbsp;<span class="cursor">█</span></div>
+        </div>
+
+        <!-- Pixel icon row -->
+        <div class="px-icon-row rev">
+          <div class="px-icon-item">
+            <svg width="28" height="28" viewBox="0 0 7 7" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="0" width="7" height="1" fill="#444"/>
+              <rect x="0" y="0" width="1" height="7" fill="#444"/>
+              <rect x="6" y="0" width="1" height="7" fill="#444"/>
+              <rect x="0" y="6" width="7" height="1" fill="#444"/>
+              <rect x="1" y="2" width="2" height="1" fill="#555"/>
+              <rect x="4" y="4" width="2" height="1" fill="#555"/>
+              <rect x="2" y="4" width="3" height="1" fill="#444"/>
+            </svg>
+            <div class="px-icon-label">CODE</div>
+          </div>
+          <div class="px-icon-item">
+            <svg width="28" height="28" viewBox="0 0 7 7" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+              <rect x="1" y="0" width="5" height="1" fill="#444"/>
+              <rect x="0" y="1" width="1" height="5" fill="#444"/>
+              <rect x="6" y="1" width="1" height="5" fill="#444"/>
+              <rect x="1" y="6" width="5" height="1" fill="#444"/>
+              <rect x="2" y="2" width="1" height="3" fill="#555"/>
+              <rect x="2" y="2" width="3" height="1" fill="#555"/>
+              <rect x="4" y="2" width="1" height="2" fill="#555"/>
+              <rect x="2" y="4" width="3" height="1" fill="#555"/>
+            </svg>
+            <div class="px-icon-label">DESIGN</div>
+          </div>
+          <div class="px-icon-item">
+            <svg width="28" height="28" viewBox="0 0 7 7" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="0" width="1" height="7" fill="#444"/>
+              <rect x="0" y="3" width="7" height="1" fill="#444"/>
+              <rect x="1" y="1" width="1" height="1" fill="#555"/>
+              <rect x="5" y="1" width="1" height="1" fill="#555"/>
+              <rect x="1" y="5" width="1" height="1" fill="#555"/>
+              <rect x="5" y="5" width="1" height="1" fill="#555"/>
+            </svg>
+            <div class="px-icon-label">BRAND</div>
+          </div>
+          <div class="px-icon-item">
+            <svg width="28" height="28" viewBox="0 0 7 7" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="0" width="3" height="5" fill="#444"/>
+              <rect x="3" y="5" width="1" height="2" fill="#444"/>
+              <rect x="1" y="6" width="5" height="1" fill="#444"/>
+              <rect x="3" y="1" width="1" height="3" fill="#222"/>
+            </svg>
+            <div class="px-icon-label">WEB</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- end hero-wrap -->
+
+  <!-- Stats bar -->
+  <div class="px-divider"></div>
+  <div class="hero-stats">
+    <div class="stat-item rev"><div class="stat-num">4+</div><div class="stat-lbl">Service Modules</div></div>
+    <div class="stat-item rev"><div class="stat-num">2in1</div><div class="stat-lbl">Design + Dev</div></div>
+    <div class="stat-item rev"><div class="stat-num">SME</div><div class="stat-lbl">Focused</div></div>
+    <div class="stat-item rev"><div class="stat-num">360&deg;</div><div class="stat-lbl">Digital Presence</div></div>
+  </div>
+
+  <!-- Additional info section -->
+  <div class="px-divider-sm"></div>
+  <div style="position:relative;z-index:4;padding:clamp(32px,5vw,60px) clamp(20px,5vw,60px);display:grid;grid-template-columns:1fr 1fr 1fr;gap:clamp(20px,3vw,40px);">
+    <div class="rev" style="border-left:3px solid var(--g6);padding-left:20px;">
+      <div style="font-family:var(--px);font-size:clamp(6px,1vw,8px);color:var(--wh);margin-bottom:10px;line-height:1.6;">GRAPHIC DESIGN</div>
+      <div style="font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g4);line-height:1.7;">Visual communication assets that define your brand's look and feel across all touchpoints.</div>
+    </div>
+    <div class="rev" style="border-left:3px solid var(--g5);padding-left:20px;">
+      <div style="font-family:var(--px);font-size:clamp(6px,1vw,8px);color:var(--wh);margin-bottom:10px;line-height:1.6;">BRAND IDENTITY</div>
+      <div style="font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g4);line-height:1.7;">Cohesive brand systems that communicate who you are and what you stand for — consistently.</div>
+    </div>
+    <div class="rev" style="border-left:3px solid var(--g4);padding-left:20px;">
+      <div style="font-family:var(--px);font-size:clamp(6px,1vw,8px);color:var(--wh);margin-bottom:10px;line-height:1.6;">WEB DEVELOPMENT</div>
+      <div style="font-family:var(--mn);font-size:clamp(11px,1.5vw,13px);color:var(--g4);line-height:1.7;">Functional, responsive websites built to perform — from landing pages to full web applications.</div>
+    </div>
+    <style>@media(max-width:700px){#pg-home .info-3col{grid-template-columns:1fr!important;}}</style>
+  </div>
+
+  <!-- Bottom CTA bar -->
+  <div style="position:relative;z-index:4;margin:0 clamp(20px,5vw,60px) clamp(32px,5vw,60px);padding:clamp(24px,4vw,40px);border:2px solid var(--g6);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;">
+    <div>
+      <div style="font-family:var(--px);font-size:clamp(10px,2vw,18px);color:var(--wh);margin-bottom:10px;line-height:1.5;">UNLIKE TRADITIONAL PLATFORM —<br>WE DO BOTH.</div>
+      <div style="font-family:var(--mn);font-size:clamp(12px,1.5vw,13px);color:var(--g4);max-width:500px;line-height:1.7;">Devign Studio bridges design and development so your brand is visually consistent <em>and</em> technically excellent — no handoffs, no miscommunication.</div>
+    </div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;flex-shrink:0;">
+      <a href="#" class="btn btn-p" onclick="navTo('pg-services');return false;">Explore Services</a>
+      <a href="#" class="btn btn-o" onclick="navTo('pg-showcase');return false;">See Our Work</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="ft-logo"><img src="Devign studio.jpeg" alt="Devign Studio"><div class="ft-copy">DEVIGN STUDIO<br><span style="color:var(--g7);">&copy; 2026 All Rights Reserved</span></div></div>
+    <div class="ft-tag"><span>&lt; Design</span> &times; <span>Develop /&gt;</span></div>
+    <div style="font-family:var(--px);font-size:clamp(5px,1vw,6px);color:var(--g7);text-align:right;line-height:2;">Branding &middot; Web Dev<br>Identity &middot; Creative</div>
+  </footer>
+</div><!-- end pg-home -->
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2 — SERVICES
+═══════════════════════════════════════════ -->
+<div class="page" id="pg-services">
+  <div class="gbg" style="position:absolute;inset:0;opacity:.35;"></div>
+
+  <div class="srv-hdr rev">
+    <div>
+      <div class="sec-label">What We Do</div>
+      <h2 class="sec-title">SERVICES &amp;<br>SOLUTIONS</h2>
+      <p class="sec-desc">Select a service module to explore capabilities, deliverables &amp; skill ratings.</p>
+    </div>
+    <div class="rpg-hud">
+      <div>STUDIO&nbsp;<span>DEVIGN v1.0</span></div>
+      <div>MODE&nbsp;<span>CREATIVE RPG</span></div>
+      <div>MODULES&nbsp;<span>04 LOADED</span></div>
+    </div>
+  </div>
+
+  <!-- RPG LAYOUT -->
+  <div class="rpg-layout">
+    <!-- MENU -->
+    <div class="rpg-menu">
+      <div class="rpg-menu-hdr">SELECT SERVICE MODULE</div>
+
+      <div class="rpg-item active" onclick="selectSvc(0,this)">
+        <div class="rpg-icon">
+          <svg width="20" height="20" viewBox="0 0 5 5" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="0" width="1" height="1" fill="currentColor"/>
+            <rect x="0" y="2" width="1" height="1" fill="currentColor"/>
+            <rect x="4" y="2" width="1" height="1" fill="currentColor"/>
+            <rect x="2" y="4" width="1" height="1" fill="currentColor"/>
+            <rect x="1" y="1" width="3" height="3" fill="currentColor" opacity=".6"/>
+          </svg>
+        </div>
+        <div class="rpg-item-info">
+          <div class="rpg-key">BASIC MODULE</div>
+          <div class="rpg-name">BRANDING<br>STARTER KIT</div>
+        </div>
+        <div class="rpg-arr">▶</div>
+      </div>
+
+      <div class="rpg-item" onclick="selectSvc(1,this)">
+        <div class="rpg-icon">
+          <svg width="20" height="20" viewBox="0 0 5 5" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="0" width="3" height="1" fill="currentColor"/>
+            <rect x="0" y="1" width="1" height="3" fill="currentColor"/>
+            <rect x="4" y="1" width="1" height="3" fill="currentColor"/>
+            <rect x="1" y="4" width="3" height="1" fill="currentColor"/>
+            <rect x="2" y="2" width="1" height="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="rpg-item-info">
+          <div class="rpg-key">MODULE A</div>
+          <div class="rpg-name">BRANDING &amp;<br>VISUAL IDENTITY</div>
+        </div>
+        <div class="rpg-arr">▶</div>
+      </div>
+
+      <div class="rpg-item" onclick="selectSvc(2,this)">
+        <div class="rpg-icon">
+          <svg width="20" height="20" viewBox="0 0 5 5" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="0" width="3" height="2" fill="currentColor"/>
+            <rect x="2" y="2" width="1" height="1" fill="currentColor"/>
+            <rect x="0" y="3" width="5" height="2" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="rpg-item-info">
+          <div class="rpg-key">MODULE B</div>
+          <div class="rpg-name">PROFESSIONAL<br>IDENTITY SOLUTIONS</div>
+        </div>
+        <div class="rpg-arr">▶</div>
+      </div>
+
+      <div class="rpg-item" onclick="selectSvc(3,this)">
+        <div class="rpg-icon">
+          <svg width="20" height="20" viewBox="0 0 5 5" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+            <rect x="0" y="0" width="5" height="1" fill="currentColor"/>
+            <rect x="0" y="0" width="1" height="5" fill="currentColor"/>
+            <rect x="4" y="0" width="1" height="5" fill="currentColor"/>
+            <rect x="0" y="4" width="5" height="1" fill="currentColor"/>
+            <rect x="1" y="2" width="1" height="1" fill="currentColor"/>
+            <rect x="3" y="2" width="1" height="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="rpg-item-info">
+          <div class="rpg-key">MODULE C</div>
+          <div class="rpg-name">ADVANCE<br>INTERACTIVE WEBSITES</div>
+        </div>
+        <div class="rpg-arr">▶</div>
+      </div>
+
+      <div class="rpg-menu-ftr">↑↓ NAVIGATE &middot; CLICK SELECT<br>All modules combinable<br>into custom packages ↓</div>
+    </div>
+
+    <!-- DETAIL -->
+    <div class="rpg-detail">
+
+      <!-- Panel: Branding Starter Kit (Basic Module) -->
+      <div class="rpg-panel active" id="sp-0">
+        <div class="p-deco">&#9733;</div>
+        <div class="p-topbar"><div class="p-id">BASIC MODULE — BRANDING STARTER KIT</div><div class="p-badge">Tailored Packages</div></div>
+        <div class="p-title">BRANDING<br>STARTER KIT</div>
+        <p class="p-desc">Brand Starter Kit includes a basic logo design, typography direction, and essential brand visuals to help you start building a consistent brand identity.</p>
+        <div class="stat-bars">
+          <div class="sb-row"><div class="sb-lbl"><span>Flexibility</span><span>100</span></div><div class="sb-track"><div class="sb-fill" data-w="100"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Customization</span><span>100</span></div><div class="sb-track"><div class="sb-fill" data-w="100"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Scope</span><span>100</span></div><div class="sb-track"><div class="sb-fill" data-w="100"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Value</span><span>95</span></div><div class="sb-track"><div class="sb-fill" data-w="95"></div></div></div>
+        </div>
+        <div class="p-grid">
+          <div>
+            <div class="p-col-lbl">What This Covers <span style="color:var(--g6);font-size:5px;letter-spacing:1px;">— CLICK TO EXPAND</span></div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Logo Design</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Custom logo with defined colors and typography to establish your brand identity.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Digital Invitations (Wedding, Birthday &amp; Corporate)</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Custom-designed invitations that make every occasion memorable. Receive a professionally designed PDF invitation alongside a dedicated website, allowing guests to easily access event details, RSVP information, and updates anytime, anywhere.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Rate Cards &amp; Marketing Visuals</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Showcase your services, pricing, and promotions with clear, impactful designs. Delivered as both a professionally designed PDF and a dedicated web page, helping customers access your offerings easily while strengthening your digital presence.</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="p-col-lbl">How It Works</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Brand Assets</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Custom Visual Designs</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Digital Deliverables</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Marketing &amp; Promotional Materials</div>
+          </div>
+        </div>
+        <div class="p-cta"><div class="p-cta-txt">Every great project starts with a conversation.<br>Tell us your idea — we'll build the solution.</div><a href="https://ig.me/m/devign__studio" class="btn btn-p" style="font-size:clamp(6px,1vw,8px);padding:10px 18px;">Let's Talk</a></div>
+      </div>
+
+      <!-- Panel A -->
+      <div class="rpg-panel" id="sp-1">
+        <div class="p-deco">A</div>
+        <div class="p-topbar"><div class="p-id">MODULE A — BRANDING &amp; VISUAL IDENTITY</div><div class="p-badge">Visual Communication</div></div>
+        <div class="p-title">BRANDING &amp;<br>VISUAL IDENTITY</div>
+        <p class="p-desc">Full-spectrum visual communication and brand identity solutions. From invitations to campaign materials — we craft assets that make your presence unforgettable.</p>
+        <div class="stat-bars">
+          <div class="sb-row"><div class="sb-lbl"><span>Creativity</span><span>95</span></div><div class="sb-track"><div class="sb-fill" data-w="95"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Visual Impact</span><span>90</span></div><div class="sb-track"><div class="sb-fill" data-w="90"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Turnaround</span><span>80</span></div><div class="sb-track"><div class="sb-fill" data-w="80"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Brand Consistency</span><span>98</span></div><div class="sb-track"><div class="sb-fill" data-w="98"></div></div></div>
+        </div>
+        <div class="p-grid">
+          <div>
+            <div class="p-col-lbl">Services <span style="color:var(--g6);font-size:5px;letter-spacing:1px;">— CLICK TO EXPAND</span></div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Brand Guideline</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">A structured foundation that defines your brand’s voice, visuals, and identity—crafted for consistency across both digital and web platforms.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Campaign Visual</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Strategic and aesthetic content designed to communicate your message, elevate brand presence, and seamlessly adapt into engaging web experiences.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Brand Catalog</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Present your products professionally with a branded catalog designed to engage and inform customers. Every project includes a high-quality PDF catalog and a responsive website version, making your products accessible both online and offline.</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="p-col-lbl">Deliverables</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Branding consistency</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Design assets package</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Visual identity guidelines</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Digital-ready materials</div>
+          </div>
+        </div>
+        <div class="p-cta"><div class="p-cta-txt">Ready to build your brand identity?<br>Let's start with a quick consultation.</div><a href="https://ig.me/m/devign__studio" class="btn btn-p" style="font-size:clamp(6px,1vw,8px);padding:10px 18px;">Start Project</a></div>
+      </div>
+
+      <!-- Panel B -->
+      <div class="rpg-panel" id="sp-2">
+        <div class="p-deco">B</div>
+        <div class="p-topbar"><div class="p-id">MODULE B — PROFESSIONAL IDENTITY SOLUTIONS</div><div class="p-badge">Personal &amp; Business</div></div>
+        <div class="p-title">PROFESSIONAL<br>IDENTITY SOLUTIONS</div>
+        <p class="p-desc">Personal and business presentation solutions crafted to communicate authority, professionalism, and personality through clean, informative websites — ranging from personal portfolios to comprehensive company profile websites.</p>
+        <div class="stat-bars">
+          <div class="sb-row"><div class="sb-lbl"><span>Professionalism</span><span>97</span></div><div class="sb-track"><div class="sb-fill" data-w="97"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Presentation</span><span>92</span></div><div class="sb-track"><div class="sb-fill" data-w="92"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Responsiveness</span><span>95</span></div><div class="sb-track"><div class="sb-fill" data-w="95"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Identity Integration</span><span>90</span></div><div class="sb-track"><div class="sb-fill" data-w="90"></div></div></div>
+        </div>
+        <div class="p-grid">
+          <div>
+            <div class="p-col-lbl">Services <span style="color:var(--g6);font-size:5px;letter-spacing:1px;">— CLICK TO EXPAND</span></div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Personal Portfolio</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Showcase your experience, achievements, and work through a professionally designed portfolio. Delivered as both a polished PDF and a personal portfolio website, helping you build credibility and make a strong impression wherever opportunities arise.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Company Profiles</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Present your company's story, services, and strengths with confidence. Receive a professionally designed company profile in PDF format alongside a dedicated website that allows clients, investors, and partners to explore your business anytime, anywhere.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Brand Profiles</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Define and communicate your brand with clarity and consistency. Delivered as both a comprehensive PDF brand profile and a branded website experience, ensuring your identity, values, and visual direction are presented professionally across all platforms.</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="p-col-lbl">Deliverables</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Professional branding</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Responsive website</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Optimized layout</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>Visual identity integration</div>
+          </div>
+        </div>
+        <div class="p-cta"><div class="p-cta-txt">Need a portfolio or company profile?<br>We handle design and development together.</div><a href="https://ig.me/m/devign__studio" class="btn btn-p" style="font-size:clamp(6px,1vw,8px);padding:10px 18px;">Start Project</a></div>
+      </div>
+
+      <!-- Panel C -->
+      <div class="rpg-panel" id="sp-3">
+        <div class="p-deco">C</div>
+        <div class="p-topbar"><div class="p-id">MODULE C — ADVANCED INTERACTIVE WEBSITES</div><div class="p-badge">Full-Stack Dev</div></div>
+        <div class="p-title">ADVANCED<br>INTERACTIVE WEBSITES</div>
+        <p class="p-desc">A website that doesn’t just display information—it responds, adapts, and engages with the user in a more dynamic way.</p>
+        <div class="stat-bars">
+          <div class="sb-row"><div class="sb-lbl"><span>Frontend Skill</span><span>95</span></div><div class="sb-track"><div class="sb-fill" data-w="95"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Backend Skill</span><span>85</span></div><div class="sb-track"><div class="sb-fill" data-w="85"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Performance</span><span>90</span></div><div class="sb-track"><div class="sb-fill" data-w="90"></div></div></div>
+          <div class="sb-row"><div class="sb-lbl"><span>Responsiveness</span><span>98</span></div><div class="sb-track"><div class="sb-fill" data-w="98"></div></div></div>
+        </div>
+        <div class="p-grid">
+          <div>
+            <div class="p-col-lbl">Services <span style="color:var(--g6);font-size:5px;letter-spacing:1px;">— CLICK TO EXPAND</span></div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Brand Profile Website</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">An interactive website showcasing your brand identity, paired with a guideline to maintain visual consistency.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Corporate &amp; Business Websites</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">A professional company website combined with brand guidelines to present your business clearly and consistently.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Business Process Automation</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Website-integrated systems that automate tasks like inquiries, bookings, and client handling to improve efficiency.</div></div>
+            </div>
+            <div class="svc-acc">
+              <div class="svc-acc-hdr" onclick="toggleAcc(this)"><span class="svc-acc-arrow">▸</span><span class="svc-acc-name">Custom Digital Solutions</span><span class="svc-acc-plus">+</span></div>
+              <div class="svc-acc-body"><div class="svc-acc-txt">Bespoke digital features such as tools, dashboards, or interactive elements tailored to your business needs.</div></div>
+            </div>
+          </div>
+          <div>
+            <div class="p-col-lbl">Tech Stack</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>HTML / CSS / JavaScript</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>React / Vue / Next.js</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>WordPress / CMS</div>
+            <div class="deliv-item"><div class="deliv-dot"></div>App Script</div>
+          </div>
+        </div>
+        <div class="p-note">All the above solutions include Mobile Responsive Design.</div>
+        <div class="p-note">⚠ Hosting and domain fees are billed separately based on client requirements.</div>
+        <div class="p-cta"><div class="p-cta-txt">Ready to launch your website?<br>We handle the full build, start to finish.</div><a href="https://ig.me/m/devign__studio" class="btn btn-p" style="font-size:clamp(6px,1vw,8px);padding:10px 18px;">Start Project</a></div>
+      </div>
+
+    </div><!-- end rpg-detail -->
+  </div><!-- end rpg-layout -->
+
+  <!-- PACKAGE BUILDER -->
+  <div class="pkg-builder rev">
+    <div class="pkg-lbl">// BUILD YOUR PACKAGE</div>
+    <div class="pkg-ttl">MIX &amp; MATCH MODULES<br>FOR YOUR PERFECT SOLUTION</div>
+    <div class="pkg-grid">
+      <div class="pkg-item" onclick="togglePkg(this,'Custom Solutions')">
+        <div class="pkg-chk">&#10003;</div>
+        <div class="pkg-nm">Basic Module — BRANDING STARTER KIT</div>
+        <div class="pkg-sb">Tailored packages, retainers, startup bundles</div>
+      </div>
+      <div class="pkg-item" onclick="togglePkg(this,'Branding &amp; Design')">
+        <div class="pkg-chk">&#10003;</div>
+        <div class="pkg-nm">MODULE A — BRANDING &amp; VISUAL IDENTITY</div>
+        <div class="pkg-sb">Invitations, catalogs, social media, campaigns</div>
+      </div>
+      <div class="pkg-item" onclick="togglePkg(this,'Professional Identity')">
+        <div class="pkg-chk">&#10003;</div>
+        <div class="pkg-nm">MODULE B — PROFESSIONAL IDENTITY SOLUTIONS</div>
+        <div class="pkg-sb">Portfolio sites, company profiles, presentations</div>
+      </div>
+      <div class="pkg-item" onclick="togglePkg(this,'Web Development')">
+        <div class="pkg-chk">&#10003;</div>
+        <div class="pkg-nm">MODULE C — ADVANCED INTERACTIVE WEBSITES</div>
+        <div class="pkg-sb">Landing pages, full sites, CMS, frontend + automation</div>
+      </div>
+    </div>
+    <div class="pkg-sum">
+      <div class="pkg-count">SELECTED: <span id="pkgCount">0</span></div>
+      <div class="pkg-tags" id="pkgTags"><span class="pkg-none">No modules selected — tap above to build your package</span></div>
+      <a href="https://ig.me/m/devign__studio" class="btn btn-p" style="font-size:clamp(6px,1vw,8px);padding:10px 18px;flex-shrink:0;">Request Quote</a>
+    </div>
+  </div>
+
+  <footer>
+    <div class="ft-logo"><img src="Devign studio.jpeg" alt="Devign Studio"><div class="ft-copy">DEVIGN STUDIO<br><span style="color:var(--g7);">&copy; 2026 All Rights Reserved</span></div></div>
+    <div class="ft-tag"><span>&lt; Design</span> &times; <span>Develop /&gt;</span></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="#" class="btn btn-o" onclick="navTo('pg-home');return false;" style="padding:8px 14px;font-size:6px;color:var(--wh);">&#8592; Home</a>
+      <a href="#" class="btn btn-p" onclick="navTo('pg-showcase');return false;" style="padding:8px 14px;font-size:6px;">View Work &#8594;</a>
+    </div>
+  </footer>
+</div><!-- end pg-services -->
+
+<!-- ═══════════════════════════════════════════
+     PAGE 3 — SHOWCASE
+═══════════════════════════════════════════ -->
+<div class="page" id="pg-showcase">
+  <div class="gbg" style="position:absolute;inset:0;opacity:.3;"></div>
+
+  <div class="sh-hdr rev">
+    <div>
+      <div class="sec-label" style="color:var(--g5);">Our Work</div>
+      <h2 class="sh-title">PROJECT<br>SHOWCASE</h2>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+      <div style="font-family:var(--px);font-size:clamp(5px,1vw,7px);color:var(--g6);text-align:right;line-height:2;">TOTAL PROJECTS<br><span class="proj-count-badge" id="projCountBadge">0</span></div>
+      <button class="admin-toggle" id="adminToggle" onclick="openPwModal()">&#128274; ADMIN</button>
+      <button class="admin-add-btn" id="adminAddBtn" onclick="openAddModal()">&#43; ADD PROJECT</button>
+    </div>
+  </div>
+
+  <p class="sh-intro">From brand identities to fully deployed websites — a live showcase of work from Devign Studio. Each project is a unique collaboration built on clarity, creativity, and code.</p>
+
+  <div style="position:relative;z-index:2;padding:0 clamp(20px,5vw,60px) clamp(24px,4vw,40px);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <div class="sh-filters" style="padding:0;margin:0;">
+      <button class="flt active" onclick="filterProj('all',this)">All</button>
+      <button class="flt" onclick="filterProj('branding',this)">Branding</button>
+      <button class="flt" onclick="filterProj('web',this)">Web Dev</button>
+      <button class="flt" onclick="filterProj('identity',this)">Identity</button>
+      <button class="flt" onclick="filterProj('custom',this)">Custom</button>
+    </div>
+    <div id="adminHint" style="display:none;font-family:var(--px);font-size:5px;color:var(--g6);letter-spacing:1px;">// ADMIN MODE ACTIVE — CLICK CARD ✕ TO DELETE</div>
+  </div>
+
+  <div class="proj-grid" id="projGrid" style="padding-bottom:4px;min-height:200px;"></div>
+
+  <div class="sh-cta rev">
+    <div>
+      <div class="sh-cta-ttl">READY TO BUILD YOUR<br>DIGITAL PRESENCE?</div>
+      <p class="sh-cta-sub">Whether you need a brand identity, a stunning website, or a complete digital transformation — Devign Studio bridges design and development into one seamless experience.</p>
+    </div>
+    <div class="sh-cta-btns">
+      <a href="https://ig.me/m/devign__studio" class="btn btn-p">Start a Project</a>
+      <a href="#" class="btn btn-o" onclick="navTo('pg-services');return false;" style="color:var(--wh);">See All Services</a>
+    </div>
+  </div>
+
+  <div class="pb80"></div>
+
+  <footer>
+    <div class="ft-logo"><img src="Devign studio.jpeg" alt="Devign Studio"><div class="ft-copy">DEVIGN STUDIO<br><span style="color:var(--g7);">&copy; 2026 All Rights Reserved</span></div></div>
+    <div class="ft-tag"><span>&lt; Design</span> &times; <span>Develop /&gt;</span></div>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <a href="#" class="btn btn-o" onclick="navTo('pg-home');return false;" style="padding:8px 14px;font-size:6px;color:var(--wh);">&#8592; Home</a>
+      <a href="#" class="btn btn-p" onclick="navTo('pg-services');return false;" style="padding:8px 14px;font-size:6px;">Services</a>
+    </div>
+  </footer>
+</div><!-- end pg-showcase -->
+
+<!-- PASSWORD MODAL -->
+<div class="pm-overlay" id="pwOverlay">
+  <div class="pw-modal">
+    <div class="pw-title">&#128274; ADMIN ACCESS</div>
+    <p class="pw-sub">Enter the admin password to add or remove projects from the showcase.</p>
+    <div class="pm-field">
+      <label class="pm-label">Password</label>
+      <input class="pm-input" type="password" id="pwInput" placeholder="Enter password..." onkeydown="if(event.key==='Enter')checkPw()">
+      <div class="pm-error" id="pwError">Incorrect password. Try again.</div>
+    </div>
+    <button class="pm-submit" onclick="checkPw()">UNLOCK</button>
+    <button onclick="closePwModal()" style="display:block;width:100%;margin-top:8px;background:none;border:1px solid var(--g7);font-family:var(--px);font-size:6px;color:var(--g5);padding:10px;cursor:none;letter-spacing:1px;">CANCEL</button>
+  </div>
+</div>
+
+<!-- ADD PROJECT MODAL -->
+<div class="pm-overlay" id="addOverlay">
+  <div class="pm-modal">
+    <div class="pm-modal-hdr">
+      <div class="pm-modal-title">&#43; ADD PROJECT</div>
+      <button class="pm-modal-close" onclick="closeAddModal()">&#10005; CLOSE</button>
+    </div>
+    <div class="pm-modal-body">
+
+      <div class="pm-field">
+        <label class="pm-label">Project Title *</label>
+        <input class="pm-input" type="text" id="pmTitle" placeholder="e.g. Brand Identity for Startup X" maxlength="60">
+      </div>
+
+      <div class="pm-field">
+        <label class="pm-label">Category *</label>
+        <select class="pm-select" id="pmCat">
+          <option value="">— Select category —</option>
+          <option value="branding">Branding</option>
+          <option value="web">Web Dev</option>
+          <option value="identity">Identity</option>
+          <option value="custom">Custom</option>
+        </select>
+      </div>
+
+      <div class="pm-field">
+        <label class="pm-label">Short Description</label>
+        <textarea class="pm-textarea" id="pmDesc" placeholder="Brief description of the project..." maxlength="120"></textarea>
+      </div>
+
+      <div style="font-family:var(--px);font-size:5px;color:var(--g6);letter-spacing:2px;margin-bottom:16px;padding:10px 12px;border:1px solid var(--g7);line-height:2;">
+        // ADD UP TO ALL THREE — AT LEAST ONE REQUIRED<br>
+        Leave any section empty to skip it.
+      </div>
+
+      <!-- IMAGE (optional) -->
+      <div class="pm-field">
+        <label class="pm-label">&#128444; Image <span style="color:var(--g6);">(optional)</span></label>
+        <div class="pm-dropzone" id="imgDrop" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event,'image')">
+          <div class="pm-dropzone-icon">&#128444;</div>
+          <div class="pm-dropzone-txt">Drop image here or click to browse</div>
+          <div class="pm-dropzone-hint">JPG, PNG, WEBP — max 5MB</div>
+          <input type="file" id="imgFile" accept="image/*" onchange="handleFile(this,'image')">
+        </div>
+        <div class="pm-file-preview" id="imgPreview">
+          <img class="pm-file-thumb" id="imgThumb" src="" alt="">
+          <span class="pm-file-name" id="imgName"></span>
+          <button class="pm-file-clear" onclick="clearFile('image')">&#10005;</button>
+        </div>
+      </div>
+
+      <!-- PDF (optional) -->
+      <div class="pm-field">
+        <label class="pm-label">&#128196; PDF File <span style="color:var(--g6);">(optional)</span></label>
+        <div class="pm-dropzone" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event,'pdf')">
+          <div class="pm-dropzone-icon">&#128196;</div>
+          <div class="pm-dropzone-txt">Drop PDF here or click to browse</div>
+          <div class="pm-dropzone-hint">PDF only — max 0.6MB (use a link for larger files)</div>
+          <input type="file" id="pdfFile" accept="application/pdf" onchange="handleFile(this,'pdf')">
+        </div>
+        <div class="pm-file-preview" id="pdfPreview">
+          <div style="width:40px;height:40px;background:var(--g7);border:1px solid var(--g6);display:flex;align-items:center;justify-content:center;font-family:var(--px);font-size:8px;color:var(--g3);flex-shrink:0;">PDF</div>
+          <span class="pm-file-name" id="pdfName"></span>
+          <button class="pm-file-clear" onclick="clearFile('pdf')">&#10005;</button>
+        </div>
+      </div>
+
+      <!-- LINK (optional) -->
+      <div class="pm-field">
+        <label class="pm-label">&#128279; External Link <span style="color:var(--g6);">(optional)</span></label>
+        <input class="pm-input" type="url" id="linkUrl" placeholder="https://yourproject.com">
+        <div style="font-family:var(--mn);font-size:11px;color:var(--g6);line-height:1.5;margin-top:6px;">Paste a live URL — shown as a button alongside image &amp; PDF.</div>
+      </div>
+
+      <div class="pm-error" id="addError"></div>
+      <button class="pm-submit" id="pmSubmit" onclick="submitProject()">SAVE PROJECT</button>
+    </div>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <div class="lightbox-inner" onclick="event.stopPropagation()">
+    <button class="lightbox-close" onclick="closeLightbox()">&#10005; CLOSE</button>
+    <img id="lightboxImg" src="" alt="">
+    <div class="lightbox-caption" id="lightboxCap"></div>
+  </div>
+</div>
+
+
+
+<script>
+// ── SERVICE ACCORDION ──
+function toggleAcc(hdr){
+  const item=hdr.parentElement;
+  const isOpen=item.classList.contains('open');
+  // close all siblings in same panel column
+  const col=item.parentElement;
+  col.querySelectorAll('.svc-acc.open').forEach(a=>{if(a!==item)a.classList.remove('open');});
+  item.classList.toggle('open',!isOpen);
+}
+
+// ── PAGE ROUTING ──
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>{p.classList.remove('active');});
+  const pg=document.getElementById(id);
+  pg.classList.add('active');
+  window.scrollTo(0,0);
+  updateNav(id);
+  initReveal();
+  if(id==='pg-services'){setTimeout(animateBars,300);}
+  if(id==='pg-home'){setTimeout(()=>{const x=document.getElementById('xpFill');if(x)x.classList.add('go');},600);}
+  if(id==='pg-showcase'){renderProjects();}
+}
+function navTo(id){showPage(id);}
+function updateNav(id){
+  document.querySelectorAll('[data-page]').forEach(a=>{
+    a.classList.toggle('active',a.dataset.page===id);
+  });
+}
+
+// ── HAMBURGER ──
+function toggleMob(){document.getElementById('mobMenu').classList.toggle('open');}
+// Close mob menu on outside click
+document.addEventListener('click',function(e){
+  const m=document.getElementById('mobMenu');
+  if(m.classList.contains('open')&&!m.contains(e.target)&&!e.target.closest('.hamburger'))m.classList.remove('open');
+});
+
+// ── SCROLL REVEAL ──
+function initReveal(){
+  const els=document.querySelectorAll('.page.active .rev');
+  if(!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('vis'));return;}
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach((en,i)=>{if(en.isIntersecting)setTimeout(()=>en.target.classList.add('vis'),i*60);});
+  },{threshold:0.08});
+  els.forEach(e=>{e.classList.remove('vis');obs.observe(e);});
+}
+
+// ── CURSOR ──
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+if(window.matchMedia('(hover:hover)').matches){
+  document.addEventListener('mousemove',e=>{
+    cur.style.left=e.clientX+'px';cur.style.top=e.clientY+'px';
+    setTimeout(()=>{cur2.style.left=e.clientX+'px';cur2.style.top=e.clientY+'px';},80);
+  });
+  document.addEventListener('mouseover',e=>{
+    if(e.target.closest('a,button,.rpg-item,.pkg-item,.flt,.proj-card'))cur.style.transform='translate(-50%,-50%) scale(1.6)';
+    else cur.style.transform='translate(-50%,-50%) scale(1)';
+  });
+}
+
+// ── PIXEL CONSTELLATION ──
+function buildConstellation(){
+  const el=document.getElementById('constellation');
+  if(!el)return;
+  el.innerHTML='';
+  const count=60;
+  const sizes=[4,4,4,6,6,8,8,2,2];
+  const opacities=['.06','.08','.1','.04','.12','.07','.05','.09','.11'];
+  for(let i=0;i<count;i++){
+    const d=document.createElement('div');
+    const sz=sizes[Math.floor(Math.random()*sizes.length)];
+    const op=opacities[Math.floor(Math.random()*opacities.length)];
+    const delay=Math.random()*6;
+    const dur=2+Math.random()*4;
+    d.style.cssText=`width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;opacity:${op};animation:dotPulse ${dur}s ${delay}s ease-in-out infinite;`;
+    d.className='px-dot';
+    el.appendChild(d);
+  }
+}
+const style=document.createElement('style');
+style.textContent='@keyframes dotPulse{0%,100%{opacity:.02;transform:scale(1);}50%{opacity:.15;transform:scale(1.5);}}';
+document.head.appendChild(style);
+
+// ── STAT BARS ──
+function animateBars(){
+  const panel=document.querySelector('#pg-services .rpg-panel.active');
+  if(!panel)return;
+  panel.querySelectorAll('.sb-fill').forEach(b=>{
+    b.style.transition='none';b.style.width='0';
+    requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+      b.style.transition='width 1s ease';
+      b.style.width=b.dataset.w+'%';
+    });});
+  });
+}
+
+// ── RPG SERVICE SELECT ──
+function selectSvc(id,el){
+  document.querySelectorAll('.rpg-item').forEach(i=>i.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.rpg-panel').forEach(p=>p.classList.remove('active'));
+  const panel=document.getElementById('sp-'+id);
+  if(panel){
+    panel.classList.add('active');
+    setTimeout(()=>{
+      panel.querySelectorAll('.sb-fill').forEach(b=>{
+        b.style.transition='none';b.style.width='0';
+        requestAnimationFrame(()=>{requestAnimationFrame(()=>{
+          b.style.transition='width 1s ease';b.style.width=b.dataset.w+'%';
+        });});
+      });
+    },50);
+  }
+}
+
+// ── PACKAGE BUILDER ──
+const pkgSel=new Set();
+function togglePkg(el,name){
+  el.classList.toggle('sel');
+  if(el.classList.contains('sel'))pkgSel.add(name);else pkgSel.delete(name);
+  document.getElementById('pkgCount').textContent=pkgSel.size;
+  const t=document.getElementById('pkgTags');
+  t.innerHTML=pkgSel.size?[...pkgSel].map(n=>`<span class="pkg-tag">${n}</span>`).join(''):'<span class="pkg-none">No modules selected</span>';
+}
+
+// ── PROJECT FILTER ──
+function filterProj(cat,btn){
+  document.querySelectorAll('.flt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.proj-card').forEach(c=>{
+    c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none';
+  });
+}
+
+// ── 3-COL INFO GRID mobile fix ──
+function fixInfoGrid(){
+  const g=document.querySelector('#pg-home > div[style*="grid-template-columns:1fr 1fr 1fr"]');
+  if(g){g.style.gridTemplateColumns=window.innerWidth<700?'1fr':'1fr 1fr 1fr';}
+}
+window.addEventListener('resize',fixInfoGrid);
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded',()=>{
+  buildConstellation();
+  initReveal();
+  setTimeout(()=>{const x=document.getElementById('xpFill');if(x)x.classList.add('go');},800);
+  fixInfoGrid();
+  // Animate bars for first load of services if somehow visible
+});
+
+// ═══════════════════════════════════════
+// PROJECT MANAGER (Firebase Firestore — synced across all devices)
+// ═══════════════════════════════════════
+const PM_PASS = 'devign2025'; // change this to your own password
+const PM_COLLECTION = 'projects';
+let pm_adminMode = false;
+let pm_imgData  = null; // base64 image
+let pm_pdfData  = null; // base64 pdf
+let pm_currentFilter = 'all';
+let pm_cache = []; // local cache of last fetched projects, used for click handlers
+
+// ── Firestore helpers ──
+async function pmFetchAll(){
+  if(!window.__fb) return [];
+  try{
+    const { db, collection, getDocs, query, orderBy } = window.__fb;
+    const q = query(collection(db, PM_COLLECTION), orderBy('added','desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }catch(e){
+    console.error('Firestore read failed:', e);
+    return [];
+  }
+}
+async function pmAdd(project){
+  const { db, collection, addDoc } = window.__fb;
+  await addDoc(collection(db, PM_COLLECTION), project);
+}
+async function pmDelete(id){
+  const { db, doc, deleteDoc } = window.__fb;
+  await deleteDoc(doc(db, PM_COLLECTION, id));
+}
+
+// ── Render ──
+async function renderProjects(){
+  const grid  = document.getElementById('projGrid');
+  const badge = document.getElementById('projCountBadge');
+  if(!grid) return;
+
+  grid.innerHTML = `<div class="proj-empty">
+    <div class="proj-empty-icon">&#9203;</div>
+    <div class="proj-empty-title">LOADING PROJECTS...</div>
+    <div class="proj-empty-sub">Syncing from the cloud.</div>
+  </div>`;
+
+  const all = await pmFetchAll();
+  pm_cache = all;
+  const filtered = pm_currentFilter==='all' ? all : all.filter(p=>p.cat===pm_currentFilter);
+  if(badge) badge.textContent = all.length;
+
+  if(all.length===0){
+    grid.innerHTML = `<div class="proj-empty">
+      <div class="proj-empty-icon">&#128444;</div>
+      <div class="proj-empty-title">NO PROJECTS YET</div>
+      <div class="proj-empty-sub">Click ADMIN in the header, unlock with the password,<br>then hit + ADD PROJECT to upload your first piece of work.</div>
+    </div>`;
+    return;
+  }
+  if(filtered.length===0){
+    grid.innerHTML = `<div class="proj-empty">
+      <div class="proj-empty-icon">&#128269;</div>
+      <div class="proj-empty-title">NO PROJECTS IN THIS CATEGORY</div>
+      <div class="proj-empty-sub">Switch to "All" or add a project under this category.</div>
+    </div>`;
+    return;
+  }
+  grid.innerHTML = filtered.map(p => buildCard(p)).join('');
+}
+
+function buildCard(p){
+  const catLabel = {branding:'Branding',web:'Web Dev',identity:'Identity',custom:'Custom'}[p.cat]||p.cat;
+  const desc = (p.desc||'').replace(/"/g,'&quot;');
+
+  // ── Thumbnail: image > pdf icon > link icon ──
+  let thumbHtml = '';
+  if(p.image){
+    thumbHtml = `<img class="proj-thumb" src="${p.image}" alt="${p.title}" loading="lazy">`;
+  } else if(p.pdf){
+    thumbHtml = `<div class="proj-thumb-bg" style="flex-direction:column;gap:8px;">
+      <svg width="48" height="56" viewBox="0 0 12 14" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="9" height="14" fill="#2a2a2a" stroke="#555" stroke-width="1"/>
+        <rect x="9" y="3" width="3" height="11" fill="#2a2a2a" stroke="#555" stroke-width="1"/>
+        <rect x="0" y="0" width="9" height="3" fill="#444"/>
+        <rect x="9" y="0" width="3" height="3" fill="#333"/>
+        <rect x="2" y="5" width="6" height="1" fill="#666"/>
+        <rect x="2" y="7" width="6" height="1" fill="#666"/>
+        <rect x="2" y="9" width="4" height="1" fill="#555"/>
+      </svg>
+      <div style="font-family:var(--px);font-size:6px;color:var(--g5);letter-spacing:1px;">PDF</div>
+    </div>`;
+  } else if(p.link){
+    let domain=''; try{ domain=new URL(p.link).hostname; }catch(e){ domain=p.link; }
+    thumbHtml = `<div class="proj-thumb-bg" style="flex-direction:column;gap:8px;">
+      <svg width="48" height="40" viewBox="0 0 12 10" style="image-rendering:pixelated" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="2" width="7" height="6" fill="none" stroke="#555" stroke-width="1"/>
+        <rect x="5" y="0" width="6" height="4" fill="none" stroke="#666" stroke-width="1"/>
+        <rect x="5" y="2" width="2" height="2" fill="#2a2a2a"/>
+        <rect x="4" y="4" width="3" height="1" fill="#666"/>
+        <rect x="1" y="5" width="3" height="1" fill="#555"/>
+      </svg>
+      <div style="font-family:var(--mn);font-size:10px;color:var(--g5);max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 8px;">${domain}</div>
+    </div>`;
+  }
+
+  // ── Source badges (icons shown in card info bar) ──
+  const badges = [
+    p.image ? '&#128444;' : null,
+    p.pdf   ? '&#128196;' : null,
+    p.link  ? '&#128279;' : null,
+  ].filter(Boolean).join(' ');
+
+  // ── Overlay action buttons — one per available source ──
+  const btns = [
+    p.image ? `<a class="ov-btn" onclick="openLightbox('${p.id}');return false;" href="#">&#128444; VIEW IMAGE</a>` : '',
+    p.pdf   ? `<a class="ov-btn" onclick="openPdfLink('${p.id}');return false;" href="#" style="background:var(--g2);">&#128196; OPEN PDF</a>` : '',
+    p.link  ? `<a class="ov-btn" onclick="openLink('${p.id}');return false;" href="#" style="background:var(--g3);">&#128279; VISIT LINK</a>` : '',
+  ].filter(Boolean).join('');
+
+  return `<div class="proj-card-dyn" data-cat="${p.cat}" data-id="${p.id}">
+    ${thumbHtml}
+    <button class="proj-del-btn" onclick="deleteProject('${p.id}',event)" title="Delete project">&#10005; DEL</button>
+    <div class="proj-ov">
+      <div class="ov-label">${p.title.toUpperCase()}</div>
+      ${desc ? `<div class="ov-tag">${desc}</div>` : ''}
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:center;width:100%;">${btns}</div>
+    </div>
+    <div class="proj-info">
+      <div class="proj-cat">${badges} ${catLabel}</div>
+      <div class="proj-nm">${p.title.toUpperCase()}</div>
+    </div>
+  </div>`;
+}
+
+// ── Lightbox (image) ──
+function openLightbox(id){
+  const p=pm_cache.find(x=>x.id===id); if(!p||!p.image) return;
+  document.getElementById('lightboxImg').src=p.image;
+  document.getElementById('lightboxCap').textContent=p.title.toUpperCase()+' — '+({branding:'Branding',web:'Web Dev',identity:'Identity',custom:'Custom'}[p.cat]||p.cat);
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('open'); document.getElementById('lightboxImg').src=''; }
+
+// ── PDF (open in new tab) ──
+function openPdfLink(id){
+  const p=pm_cache.find(x=>x.id===id); if(!p||!p.pdf) return;
+  const w=window.open('','_blank');
+  w.document.write('<style>body{margin:0;background:#111;}</style><embed src="'+p.pdf+'" width="100%" height="100%" type="application/pdf">');
+}
+
+// ── External link ──
+function openLink(id){
+  const p=pm_cache.find(x=>x.id===id); if(p&&p.link) window.open(p.link,'_blank');
+}
+
+// ── Delete ──
+async function deleteProject(id,e){
+  e.stopPropagation();
+  if(!pm_adminMode) return;
+  if(!confirm('Delete this project? This cannot be undone.')) return;
+  try{
+    await pmDelete(id);
+    renderProjects();
+  }catch(err){
+    alert('Failed to delete. Check your connection and try again.');
+    console.error(err);
+  }
+}
+
+// ── Filter ──
+function filterProj(cat,btn){
+  pm_currentFilter=cat;
+  document.querySelectorAll('.flt').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProjects();
+}
+
+// ── Admin auth ──
+function openPwModal(){
+  if(pm_adminMode){ lockAdmin(); return; }
+  document.getElementById('pwInput').value='';
+  document.getElementById('pwError').classList.remove('show');
+  document.getElementById('pwOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('pwInput').focus(),100);
+}
+function closePwModal(){ document.getElementById('pwOverlay').classList.remove('open'); }
+function checkPw(){
+  if(document.getElementById('pwInput').value.trim()===PM_PASS){
+    closePwModal();
+    pm_adminMode=true;
+    document.body.classList.add('admin-mode');
+    document.getElementById('adminToggle').classList.add('unlocked');
+    document.getElementById('adminToggle').innerHTML='&#128275; ADMIN';
+    document.getElementById('adminAddBtn').classList.add('show');
+    document.getElementById('adminHint').style.display='block';
+    renderProjects();
+  } else {
+    document.getElementById('pwError').classList.add('show');
+    document.getElementById('pwInput').focus();
+  }
+}
+function lockAdmin(){
+  pm_adminMode=false;
+  document.body.classList.remove('admin-mode');
+  document.getElementById('adminToggle').classList.remove('unlocked');
+  document.getElementById('adminToggle').innerHTML='&#128274; ADMIN';
+  document.getElementById('adminAddBtn').classList.remove('show');
+  document.getElementById('adminHint').style.display='none';
+  renderProjects();
+}
+
+// ── Add modal ──
+function openAddModal(){
+  document.getElementById('pmTitle').value='';
+  document.getElementById('pmCat').value='';
+  document.getElementById('pmDesc').value='';
+  document.getElementById('linkUrl').value='';
+  document.getElementById('addError').textContent='';
+  document.getElementById('addError').classList.remove('show');
+  clearFile('image'); clearFile('pdf');
+  document.getElementById('addOverlay').classList.add('open');
+}
+function closeAddModal(){ document.getElementById('addOverlay').classList.remove('open'); }
+
+// ── File handling ──
+function handleDrop(e,type){
+  e.preventDefault(); e.currentTarget.classList.remove('drag');
+  const file=e.dataTransfer.files[0]; if(!file) return;
+  processFile(file,type);
+}
+function handleFile(input,type){
+  const file=input.files[0]; if(!file) return;
+  processFile(file,type);
+}
+function processFile(file,type){
+  const maxMB=type==='image'?5:0.6;
+  if(file.size>maxMB*1024*1024){ showAddError('File too large. Max '+maxMB+'MB.'); return; }
+  if(type==='image'){
+    compressImage(file,900,680,0.72,b64=>{
+      pm_imgData=b64;
+      document.getElementById('imgThumb').src=b64;
+      document.getElementById('imgName').textContent=file.name;
+      document.getElementById('imgPreview').classList.add('show');
+    });
+  } else {
+    const r=new FileReader();
+    r.onload=e=>{ pm_pdfData=e.target.result; document.getElementById('pdfName').textContent=file.name; document.getElementById('pdfPreview').classList.add('show'); };
+    r.readAsDataURL(file);
+  }
+}
+function clearFile(type){
+  if(type==='image'){
+    pm_imgData=null;
+    document.getElementById('imgFile').value='';
+    document.getElementById('imgThumb').src='';
+    document.getElementById('imgPreview').classList.remove('show');
+  } else {
+    pm_pdfData=null;
+    document.getElementById('pdfFile').value='';
+    document.getElementById('pdfPreview').classList.remove('show');
+  }
+}
+function compressImage(file,maxW,maxH,q,cb){
+  const img=new Image(), url=URL.createObjectURL(file);
+  img.onload=()=>{
+    let w=img.width,h=img.height;
+    if(w>maxW){h=h*maxW/w;w=maxW;} if(h>maxH){w=w*maxH/h;h=maxH;}
+    const c=document.createElement('canvas'); c.width=Math.round(w); c.height=Math.round(h);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    cb(c.toDataURL('image/jpeg',q)); URL.revokeObjectURL(url);
+  };
+  img.src=url;
+}
+
+function showAddError(msg){ const e=document.getElementById('addError'); e.textContent=msg; e.classList.add('show'); }
+function hideAddError(){ document.getElementById('addError').classList.remove('show'); }
+
+// ── Submit ──
+async function submitProject(){
+  hideAddError();
+  const title=document.getElementById('pmTitle').value.trim();
+  const cat=document.getElementById('pmCat').value;
+  const desc=document.getElementById('pmDesc').value.trim();
+  const link=(document.getElementById('linkUrl').value||'').trim();
+
+  if(!title){ showAddError('Please enter a project title.'); return; }
+  if(!cat){ showAddError('Please select a category.'); return; }
+
+  // Validate link URL if provided
+  if(link){ try{ new URL(link); }catch(e){ showAddError('Please enter a valid URL (include https://).'); return; } }
+
+  // At least one source required
+  if(!pm_imgData && !pm_pdfData && !link){ showAddError('Please add at least one source — image, PDF, or link.'); return; }
+
+  // Firestore documents max out at ~1MB — guard against oversized payloads
+  const approxSize = (pm_imgData?.length||0) + (pm_pdfData?.length||0);
+  if(approxSize > 900000){
+    showAddError('Combined file size is too large for cloud storage. Please use a smaller image, or a link instead of an embedded PDF.');
+    return;
+  }
+
+  const project={
+    title, cat, desc,
+    image: pm_imgData || null,
+    pdf:   pm_pdfData || null,
+    link:  link || null,
+    added: new Date().toISOString()
+  };
+
+  const submitBtn = document.getElementById('pmSubmit');
+  if(submitBtn){ submitBtn.disabled = true; submitBtn.textContent = 'SAVING...'; }
+
+  try{
+    await pmAdd(project);
+    closeAddModal();
+    renderProjects();
+  }catch(e){
+    console.error(e);
+    showAddError('Failed to save to the cloud. Check your connection and try again.');
+  }finally{
+    if(submitBtn){ submitBtn.disabled = false; submitBtn.textContent = 'SAVE PROJECT'; }
+  }
+}
+
+// ── Modal overlay click to close ──
+// ── ESC to close ──
+document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeLightbox(); closePwModal(); closeAddModal(); } });
+
+// ── Init (single DOMContentLoaded) ──
+window.addEventListener('DOMContentLoaded',()=>{
+  if(window.__fbReady){ renderProjects(); }
+  else { window.addEventListener('firebaseready', renderProjects, { once:true }); }
+  const pw = document.getElementById('pwOverlay');
+  const ad = document.getElementById('addOverlay');
+  if(pw) pw.addEventListener('click',function(e){ if(e.target===this) closePwModal(); });
+  if(ad) ad.addEventListener('click',function(e){ if(e.target===this) closeAddModal(); });
+});
+
+
+
+</script>
+</body>
+</html>
